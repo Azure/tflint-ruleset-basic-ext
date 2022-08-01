@@ -13,7 +13,43 @@ func Test_TerraformLocalsOrderRule(t *testing.T) {
 		Expected helper.Issues
 	}{
 		{
-			Name: "common",
+			Name: "1. correct locals variable order",
+			Content: `
+locals {
+  common_tags = {
+    Service = local.service_name
+    Owner   = local.owner
+  }
+  instance_ids = concat(aws_instance.blue.*.id, aws_instance.green.*.id)
+}`,
+			Expected: helper.Issues{},
+		},
+		{
+			Name: "2. sorting in alphabetic order",
+			Content: `
+locals {
+  instance_ids = concat(aws_instance.blue.*.id, aws_instance.green.*.id)
+  common_tags = {
+    Service = local.service_name
+    Owner   = local.owner
+  }
+}`,
+			Expected: helper.Issues{
+				{
+					Rule: NewTerraformLocalsOrderRule(),
+					Message: `Recommended locals variable order:
+locals {
+  common_tags = {
+    Service = local.service_name
+    Owner   = local.owner
+  }
+  instance_ids = concat(aws_instance.blue.*.id, aws_instance.green.*.id)
+}`,
+				},
+			},
+		},
+		{
+			Name: "3. multiple locals block in the same file",
 			Content: `
 locals {
   instance_ids = concat(aws_instance.blue.*.id, aws_instance.green.*.id)

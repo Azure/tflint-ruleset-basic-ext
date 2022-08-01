@@ -13,7 +13,115 @@ func Test_TerraformVariableOrderRule(t *testing.T) {
 		Expected helper.Issues
 	}{
 		{
-			Name: "common",
+			Name: "1. no variable",
+			Content: `
+terraform{}`,
+			Expected: helper.Issues{},
+		},
+		{
+			Name: "2. correct variable order",
+			Content: `
+variable "availability_zone_names" {
+  type    = list(string)
+  default = ["us-west-1a"]
+}
+
+variable "docker_ports" {
+  type = list(object({
+    internal = number
+    external = number
+    protocol = string
+  }))
+  default = [
+    {
+      internal = 8300
+      external = 8300
+      protocol = "tcp"
+    }
+  ]
+}
+
+variable "image_id" {
+  type = string
+}`,
+			Expected: helper.Issues{},
+		},
+		{
+			Name: "3. sorting based on default value",
+			Content: `
+variable "image_id" {
+  type = string
+}
+
+variable "availability_zone_names" {
+  type    = list(string)
+  default = ["us-west-1a"]
+}`,
+			Expected: helper.Issues{
+				{
+					Rule: NewTerraformVariableOrderRule(),
+					Message: `Recommended variable order:
+variable "availability_zone_names" {
+  type    = list(string)
+  default = ["us-west-1a"]
+}
+
+variable "image_id" {
+  type = string
+}`,
+				},
+			},
+		},
+		{
+			Name: "4. sorting in alphabetic order",
+			Content: `
+variable "docker_ports" {
+  type = list(object({
+    internal = number
+    external = number
+    protocol = string
+  }))
+  default = [
+    {
+      internal = 8300
+      external = 8300
+      protocol = "tcp"
+    }
+  ]
+}
+
+variable "availability_zone_names" {
+  type    = list(string)
+  default = ["us-west-1a"]
+}`,
+			Expected: helper.Issues{
+				{
+					Rule: NewTerraformVariableOrderRule(),
+					Message: `Recommended variable order:
+variable "availability_zone_names" {
+  type    = list(string)
+  default = ["us-west-1a"]
+}
+
+variable "docker_ports" {
+  type = list(object({
+    internal = number
+    external = number
+    protocol = string
+  }))
+  default = [
+    {
+      internal = 8300
+      external = 8300
+      protocol = "tcp"
+    }
+  ]
+}`,
+				},
+			},
+		},
+		{
+			Name: "5. mixed",
 			Content: `
 terraform{}
 
