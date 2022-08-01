@@ -1,4 +1,4 @@
-# azurerm_arg_order
+# terraform_variable_order
 
 Recommend proper order for variable blocks
 The variables with default value set are placed prior to those without default values

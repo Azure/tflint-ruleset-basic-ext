@@ -8,4 +8,5 @@ import (
 var Rules = []tflint.Rule{
 	NewTerraformVariableOrderRule(),
 	NewTerraformOutputOrderRule(),
+	NewTerraformLocalsOrderRule(),
 }

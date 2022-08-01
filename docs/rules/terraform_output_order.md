@@ -1,4 +1,4 @@
-# azurerm_arg_order
+# terraform_output_order
 
 Recommend proper order for output blocks
 The outputs are sorted based on their names (alphabetic order)
