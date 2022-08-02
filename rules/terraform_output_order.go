@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-// TerraformOutputOrderRule checks whether comments use the preferred syntax
+// TerraformOutputOrderRule checks whether the outputs are sorted in expected order
 type TerraformOutputOrderRule struct {
 	tflint.DefaultRule
 }
@@ -42,7 +42,7 @@ func (r *TerraformOutputOrderRule) Link() string {
 	return project.ReferenceLink(r.Name())
 }
 
-// Check checks whether single line comments is used
+// Check checks whether the outputs are sorted in expected order
 func (r *TerraformOutputOrderRule) Check(runner tflint.Runner) error {
 
 	files, err := runner.GetFiles()
@@ -62,7 +62,7 @@ func (r *TerraformOutputOrderRule) checkOutputOrder(runner tflint.Runner, file *
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 
 	var outputNames, sortedoutputHclTxts []string
-	var firstNonOutputBlockRange, firstOutputBlockRange hcl.Range
+	var firstOutputBlockRange hcl.Range
 	outputHclTxts := make(map[string]string)
 	for _, block := range blocks {
 		switch block.Type {
@@ -73,19 +73,7 @@ func (r *TerraformOutputOrderRule) checkOutputOrder(runner tflint.Runner, file *
 			outputName := block.Labels[0]
 			outputNames = append(outputNames, outputName)
 			outputHclTxts[outputName] = string(block.Range().SliceBytes(file.Bytes))
-		default:
-			if firstNonOutputBlockRange.Filename == "" {
-				firstNonOutputBlockRange = block.DefRange()
-			}
 		}
-	}
-
-	if len(outputNames) > 0 && len(outputNames) < len(blocks) {
-		runner.EmitIssue(
-			r,
-			"Putting outputs and other types of block in the same file is not recommended",
-			firstNonOutputBlockRange,
-		)
 	}
 
 	if sort.StringsAreSorted(outputNames) {
@@ -96,10 +84,13 @@ func (r *TerraformOutputOrderRule) checkOutputOrder(runner tflint.Runner, file *
 		sortedoutputHclTxts = append(sortedoutputHclTxts, outputHclTxts[outputName])
 	}
 	sortedOutputHclBytes := hclwrite.Format([]byte(strings.Join(sortedoutputHclTxts, "\n\n")))
-	runner.EmitIssue(
+	err := runner.EmitIssue(
 		r,
 		fmt.Sprintf("Recommended output order:\n%s", sortedOutputHclBytes),
 		firstOutputBlockRange,
 	)
+	if err != nil {
+		return err
+	}
 	return nil
 }

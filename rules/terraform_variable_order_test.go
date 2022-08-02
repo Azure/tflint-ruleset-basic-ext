@@ -21,6 +21,10 @@ terraform{}`,
 		{
 			Name: "2. correct variable order",
 			Content: `
+variable "image_id" {
+  type = string
+}
+
 variable "availability_zone_names" {
   type    = list(string)
   default = ["us-west-1a"]
@@ -39,35 +43,31 @@ variable "docker_ports" {
       protocol = "tcp"
     }
   ]
-}
-
-variable "image_id" {
-  type = string
 }`,
 			Expected: helper.Issues{},
 		},
 		{
 			Name: "3. sorting based on default value",
 			Content: `
-variable "image_id" {
-  type = string
-}
-
 variable "availability_zone_names" {
   type    = list(string)
   default = ["us-west-1a"]
+}
+
+variable "image_id" {
+  type = string
 }`,
 			Expected: helper.Issues{
 				{
 					Rule: NewTerraformVariableOrderRule(),
 					Message: `Recommended variable order:
+variable "image_id" {
+  type = string
+}
+
 variable "availability_zone_names" {
   type    = list(string)
   default = ["us-west-1a"]
-}
-
-variable "image_id" {
-  type = string
 }`,
 				},
 			},
@@ -123,12 +123,6 @@ variable "docker_ports" {
 		{
 			Name: "5. mixed",
 			Content: `
-terraform{}
-
-variable "image_id" {
-  type = string
-}
-
 variable "docker_ports" {
   type = list(object({
     internal = number
@@ -147,15 +141,19 @@ variable "docker_ports" {
 variable "availability_zone_names" {
   type    = list(string)
   default = ["us-west-1a"]
+}
+
+variable "image_id" {
+  type = string
 }`,
 			Expected: helper.Issues{
 				{
-					Rule:    NewTerraformVariableOrderRule(),
-					Message: "Putting variables and other types of blocks in the same file is not recommended",
-				},
-				{
 					Rule: NewTerraformVariableOrderRule(),
 					Message: `Recommended variable order:
+variable "image_id" {
+  type = string
+}
+
 variable "availability_zone_names" {
   type    = list(string)
   default = ["us-west-1a"]
@@ -174,10 +172,6 @@ variable "docker_ports" {
       protocol = "tcp"
     }
   ]
-}
-
-variable "image_id" {
-  type = string
 }`,
 				},
 			},

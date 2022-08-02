@@ -1,6 +1,4 @@
-variable "image_id" {
-  type = string
-}
+terraform {}
 
 variable "docker_ports" {
   type = list(object({
@@ -20,4 +18,8 @@ variable "docker_ports" {
 variable "availability_zone_names" {
   type    = list(string)
   default = ["us-west-1a"]
+}
+
+variable "image_id" {
+  type = string
 }

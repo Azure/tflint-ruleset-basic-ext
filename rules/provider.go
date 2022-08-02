@@ -7,6 +7,8 @@ import (
 // Rules is a list of all rules
 var Rules = []tflint.Rule{
 	NewTerraformVariableOrderRule(),
+	NewTerraformVariableSeparateRule(),
+	NewTerraformOutputSeparateRule(),
 	NewTerraformOutputOrderRule(),
 	NewTerraformLocalsOrderRule(),
 }

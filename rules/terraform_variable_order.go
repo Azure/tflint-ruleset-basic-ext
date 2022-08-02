@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-// TerraformVariableOrderRule checks whether comments use the preferred syntax
+// TerraformVariableOrderRule checks whether the variables are sorted in expected order
 type TerraformVariableOrderRule struct {
 	tflint.DefaultRule
 }
@@ -43,7 +43,7 @@ func (r *TerraformVariableOrderRule) Link() string {
 	return project.ReferenceLink(r.Name())
 }
 
-// Check checks whether single line comments is used
+// Check checks whether the variables are sorted in expected order
 func (r *TerraformVariableOrderRule) Check(runner tflint.Runner) error {
 
 	files, err := runner.GetFiles()
@@ -74,11 +74,11 @@ func (r *TerraformVariableOrderRule) checkVariableOrder(runner tflint.Runner, fi
 	}
 
 	blocks := file.Body.(*hclsyntax.Body).Blocks
-	sortedVariableNames := getSortedVariableNames(blocks, true)
-	sortedVariableNames = append(sortedVariableNames, getSortedVariableNames(blocks, false)...)
+	sortedVariableNames := getSortedVariableNames(blocks, false)
+	sortedVariableNames = append(sortedVariableNames, getSortedVariableNames(blocks, true)...)
 
 	var variableNames, sortedVariableHclTxts []string
-	var firstNonVarBlockRange, firstVarBlockRange hcl.Range
+	var firstVarBlockRange hcl.Range
 	variableHclTxts := make(map[string]string)
 	for _, block := range blocks {
 		switch block.Type {
@@ -89,32 +89,22 @@ func (r *TerraformVariableOrderRule) checkVariableOrder(runner tflint.Runner, fi
 			variableName := block.Labels[0]
 			variableNames = append(variableNames, variableName)
 			variableHclTxts[variableName] = string(block.Range().SliceBytes(file.Bytes))
-		default:
-			if firstNonVarBlockRange.Filename == "" {
-				firstNonVarBlockRange = block.DefRange()
-			}
 		}
 	}
 
-	if len(variableNames) > 0 && len(variableNames) < len(blocks) {
-		runner.EmitIssue(
-			r,
-			"Putting variables and other types of blocks in the same file is not recommended",
-			firstNonVarBlockRange,
-		)
-	}
-
-	for _, variableName := range sortedVariableNames {
-		sortedVariableHclTxts = append(sortedVariableHclTxts, variableHclTxts[variableName])
-	}
-	sortedVariableHclBytes := hclwrite.Format([]byte(strings.Join(sortedVariableHclTxts, "\n\n")))
-
 	if !reflect.DeepEqual(variableNames, sortedVariableNames) {
-		runner.EmitIssue(
+		for _, variableName := range sortedVariableNames {
+			sortedVariableHclTxts = append(sortedVariableHclTxts, variableHclTxts[variableName])
+		}
+		sortedVariableHclBytes := hclwrite.Format([]byte(strings.Join(sortedVariableHclTxts, "\n\n")))
+		err := runner.EmitIssue(
 			r,
 			fmt.Sprintf("Recommended variable order:\n%s", sortedVariableHclBytes),
 			firstVarBlockRange,
 		)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
