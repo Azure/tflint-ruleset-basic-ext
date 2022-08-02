@@ -61,7 +61,7 @@ func (r *TerraformOutputOrderRule) checkOutputOrder(runner tflint.Runner, file *
 
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 
-	var outputNames, sortedoutputHclTxts []string
+	var outputNames []string
 	var firstOutputBlockRange hcl.Range
 	outputHclTxts := make(map[string]string)
 	for _, block := range blocks {
@@ -80,6 +80,7 @@ func (r *TerraformOutputOrderRule) checkOutputOrder(runner tflint.Runner, file *
 		return nil
 	}
 	sort.Strings(outputNames)
+	var sortedoutputHclTxts []string
 	for _, outputName := range outputNames {
 		sortedoutputHclTxts = append(sortedoutputHclTxts, outputHclTxts[outputName])
 	}

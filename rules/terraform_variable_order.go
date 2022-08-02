@@ -77,7 +77,7 @@ func (r *TerraformVariableOrderRule) checkVariableOrder(runner tflint.Runner, fi
 	sortedVariableNames := getSortedVariableNames(blocks, false)
 	sortedVariableNames = append(sortedVariableNames, getSortedVariableNames(blocks, true)...)
 
-	var variableNames, sortedVariableHclTxts []string
+	var variableNames []string
 	var firstVarBlockRange hcl.Range
 	variableHclTxts := make(map[string]string)
 	for _, block := range blocks {
@@ -93,6 +93,7 @@ func (r *TerraformVariableOrderRule) checkVariableOrder(runner tflint.Runner, fi
 	}
 
 	if !reflect.DeepEqual(variableNames, sortedVariableNames) {
+		var sortedVariableHclTxts []string
 		for _, variableName := range sortedVariableNames {
 			sortedVariableHclTxts = append(sortedVariableHclTxts, variableHclTxts[variableName])
 		}

@@ -100,10 +100,10 @@ func (r *TerraformLocalsOrderRule) checkLocalsOrder(runner tflint.Runner, block 
 	localsHclTxt := strings.Join(localsHclTxts, "\n")
 	localsHclTxt = fmt.Sprintf("%s {\n%s\n}", block.Type, localsHclTxt)
 	localsHclTxt = string(hclwrite.Format([]byte(localsHclTxt)))
-	runner.EmitIssue(
+	err = runner.EmitIssue(
 		r,
 		fmt.Sprintf("Recommended locals variable order:\n%s", localsHclTxt),
 		block.DefRange(),
 	)
-	return nil
+	return err
 }
