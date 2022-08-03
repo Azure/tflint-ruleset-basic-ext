@@ -80,11 +80,11 @@ func (r *TerraformOutputOrderRule) checkOutputOrder(runner tflint.Runner, file *
 		return nil
 	}
 	sort.Strings(outputNames)
-	var sortedoutputHclTxts []string
+	var sortedOutputHclTxts []string
 	for _, outputName := range outputNames {
-		sortedoutputHclTxts = append(sortedoutputHclTxts, outputHclTxts[outputName])
+		sortedOutputHclTxts = append(sortedOutputHclTxts, outputHclTxts[outputName])
 	}
-	sortedOutputHclBytes := hclwrite.Format([]byte(strings.Join(sortedoutputHclTxts, "\n\n")))
+	sortedOutputHclBytes := hclwrite.Format([]byte(strings.Join(sortedOutputHclTxts, "\n\n")))
 	err := runner.EmitIssue(
 		r,
 		fmt.Sprintf("Recommended output order:\n%s", sortedOutputHclBytes),

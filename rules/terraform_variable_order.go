@@ -92,20 +92,18 @@ func (r *TerraformVariableOrderRule) checkVariableOrder(runner tflint.Runner, fi
 		}
 	}
 
-	if !reflect.DeepEqual(variableNames, sortedVariableNames) {
-		var sortedVariableHclTxts []string
-		for _, variableName := range sortedVariableNames {
-			sortedVariableHclTxts = append(sortedVariableHclTxts, variableHclTxts[variableName])
-		}
-		sortedVariableHclBytes := hclwrite.Format([]byte(strings.Join(sortedVariableHclTxts, "\n\n")))
-		err := runner.EmitIssue(
-			r,
-			fmt.Sprintf("Recommended variable order:\n%s", sortedVariableHclBytes),
-			firstVarBlockRange,
-		)
-		if err != nil {
-			return err
-		}
+	if reflect.DeepEqual(variableNames, sortedVariableNames) {
+		return nil
 	}
-	return nil
+	var sortedVariableHclTxts []string
+	for _, variableName := range sortedVariableNames {
+		sortedVariableHclTxts = append(sortedVariableHclTxts, variableHclTxts[variableName])
+	}
+	sortedVariableHclBytes := hclwrite.Format([]byte(strings.Join(sortedVariableHclTxts, "\n\n")))
+	err := runner.EmitIssue(
+		r,
+		fmt.Sprintf("Recommended variable order:\n%s", sortedVariableHclBytes),
+		firstVarBlockRange,
+	)
+	return err
 }
