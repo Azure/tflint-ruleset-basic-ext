@@ -66,21 +66,18 @@ func (r *TerraformOutputSeparateRule) checkOutputSeparate(runner tflint.Runner, 
 				outputDefined = true
 			}
 		default:
-			if firstNonOutputBlockRange.Filename == "" {
+			if IsRangeEmpty(firstNonOutputBlockRange) {
 				firstNonOutputBlockRange = block.DefRange()
 			}
 		}
 	}
 
-	if outputDefined && firstNonOutputBlockRange.Filename != "" {
-		err := runner.EmitIssue(
+	if outputDefined && !IsRangeEmpty(firstNonOutputBlockRange) {
+		return runner.EmitIssue(
 			r,
 			"Putting outputs and other types of blocks in the same file is not recommended",
 			firstNonOutputBlockRange,
 		)
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }

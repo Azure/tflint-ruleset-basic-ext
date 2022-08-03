@@ -64,7 +64,7 @@ func (r *TerraformLocalsOrderRule) checkFile(runner tflint.Runner, file *hcl.Fil
 		switch block.Type {
 		case "locals":
 			if subErr := r.checkLocalsOrder(runner, block); subErr != nil {
-				err = multierror.Append(subErr)
+				err = multierror.Append(err, subErr)
 			}
 		}
 	}
@@ -100,10 +100,9 @@ func (r *TerraformLocalsOrderRule) checkLocalsOrder(runner tflint.Runner, block 
 	localsHclTxt := strings.Join(localsHclTxts, "\n")
 	localsHclTxt = fmt.Sprintf("%s {\n%s\n}", block.Type, localsHclTxt)
 	localsHclTxt = string(hclwrite.Format([]byte(localsHclTxt)))
-	err = runner.EmitIssue(
+	return runner.EmitIssue(
 		r,
 		fmt.Sprintf("Recommended locals variable order:\n%s", localsHclTxt),
 		block.DefRange(),
 	)
-	return err
 }

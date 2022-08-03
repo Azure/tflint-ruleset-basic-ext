@@ -66,21 +66,18 @@ func (r *TerraformVariableSeparateRule) checkVariableSeparate(runner tflint.Runn
 				variableDefined = true
 			}
 		default:
-			if firstNonVarBlockRange.Filename == "" {
+			if IsRangeEmpty(firstNonVarBlockRange) {
 				firstNonVarBlockRange = block.DefRange()
 			}
 		}
 	}
 
-	if variableDefined && firstNonVarBlockRange.Filename != "" {
-		err := runner.EmitIssue(
+	if variableDefined && !IsRangeEmpty(firstNonVarBlockRange) {
+		return runner.EmitIssue(
 			r,
 			"Putting variables and other types of blocks in the same file is not recommended",
 			firstNonVarBlockRange,
 		)
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }

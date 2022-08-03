@@ -67,7 +67,7 @@ func (r *TerraformOutputOrderRule) checkOutputOrder(runner tflint.Runner, file *
 	for _, block := range blocks {
 		switch block.Type {
 		case "output":
-			if firstOutputBlockRange.Filename == "" {
+			if IsRangeEmpty(firstOutputBlockRange) {
 				firstOutputBlockRange = block.DefRange()
 			}
 			outputName := block.Labels[0]
@@ -85,13 +85,9 @@ func (r *TerraformOutputOrderRule) checkOutputOrder(runner tflint.Runner, file *
 		sortedOutputHclTxts = append(sortedOutputHclTxts, outputHclTxts[outputName])
 	}
 	sortedOutputHclBytes := hclwrite.Format([]byte(strings.Join(sortedOutputHclTxts, "\n\n")))
-	err := runner.EmitIssue(
+	return runner.EmitIssue(
 		r,
 		fmt.Sprintf("Recommended output order:\n%s", sortedOutputHclBytes),
 		firstOutputBlockRange,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
 }
