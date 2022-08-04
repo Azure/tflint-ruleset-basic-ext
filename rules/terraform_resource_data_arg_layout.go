@@ -75,18 +75,15 @@ func (r *TerraformResourceDataArgLayoutRule) visitFile(runner tflint.Runner, fil
 
 func (r *TerraformResourceDataArgLayoutRule) visitResourceDataBlock(runner tflint.Runner, block *hclsyntax.Block) error {
 	issue := new(helper.Issue)
-	_, err := r.visitBlock(runner, block, issue)
+	r.visitBlock(runner, block, issue)
 	if !r.isIssueEmpty(issue) {
-		err = multierror.Append(err, runner.EmitIssue((*issue).Rule, (*issue).Message, (*issue).Range))
+		return runner.EmitIssue((*issue).Rule, (*issue).Message, (*issue).Range)
 	}
-	return err
+	return nil
 }
 
-func (r *TerraformResourceDataArgLayoutRule) visitBlock(runner tflint.Runner, block *hclsyntax.Block, issue *helper.Issue) (string, error) {
-	file, err := runner.GetFile(block.Range().Filename)
-	if err != nil {
-		return "", err
-	}
+func (r *TerraformResourceDataArgLayoutRule) visitBlock(runner tflint.Runner, block *hclsyntax.Block, issue *helper.Issue) string {
+	file, _ := runner.GetFile(block.Range().Filename)
 	argGrps, isCorrectLayout := r.getSortedArgGrps(block)
 	var sortedArgHclTxts []string
 	var sortedArgs []Arg
@@ -104,11 +101,7 @@ func (r *TerraformResourceDataArgLayoutRule) visitBlock(runner tflint.Runner, bl
 			if arg.Block == nil {
 				argHclTxt = string(arg.Range.SliceBytes(file.Bytes))
 			} else {
-				var subErr error
-				argHclTxt, subErr = r.visitBlock(runner, arg.Block, issue)
-				if subErr != nil {
-					err = multierror.Append(err, subErr)
-				}
+				argHclTxt = r.visitBlock(runner, arg.Block, issue)
 			}
 			sortedArgHclTxts = append(sortedArgHclTxts, argHclTxt)
 		}
@@ -127,7 +120,7 @@ func (r *TerraformResourceDataArgLayoutRule) visitBlock(runner tflint.Runner, bl
 		issue.Message = fmt.Sprintf("Arguments are expected to be arranged in following Layout:\n%s", sortedBlockHclTxt)
 		issue.Range = block.DefRange()
 	}
-	return sortedBlockHclTxt, err
+	return sortedBlockHclTxt
 }
 
 func (r *TerraformResourceDataArgLayoutRule) getSortedArgGrps(block *hclsyntax.Block) ([][]Arg, bool) {
