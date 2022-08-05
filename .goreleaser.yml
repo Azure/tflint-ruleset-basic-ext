@@ -26,7 +26,6 @@ checksum:
   name_template: 'checksums.txt'
 sign:
   artifacts: checksum
-  signature: "${artifact}.sig"
 release:
   github:
     owner: DrikoldLun
