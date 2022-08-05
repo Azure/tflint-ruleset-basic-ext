@@ -24,6 +24,8 @@ changelog:
   skip: true
 checksum:
   name_template: 'checksums.txt'
+sign:
+  artifacts: checksum
 release:
   github:
     owner: DrikoldLun
