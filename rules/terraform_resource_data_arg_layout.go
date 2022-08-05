@@ -67,7 +67,9 @@ func (r *TerraformResourceDataArgLayoutRule) visitFile(runner tflint.Runner, fil
 	for _, block := range body.Blocks {
 		switch block.Type {
 		case "resource", "data":
-			r.visitResourceDataBlock(runner, block)
+			if err := r.visitResourceDataBlock(runner, block); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
