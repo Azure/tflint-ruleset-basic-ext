@@ -1,0 +1,32 @@
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+env:
+  - CGO_ENABLED=0
+  - REPO_OWNER={{ .Env.REPO_OWNER }}
+  - REPO_NAME={{ .Env.REPO_NAME }}
+builds:
+  - targets:
+      - darwin_amd64
+      - darwin_arm64
+      - linux_386
+      - linux_amd64
+      - linux_arm
+      - linux_arm64
+      - windows_386
+      - windows_amd64
+archives:
+  - id: zip
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    format: zip
+    files:
+      - none*
+changelog:
+  skip: true
+checksum:
+  name_template: 'checksums.txt'
+release:
+  github:
+    owner: DrikoldLun
+    name: tflint-ruleset-basic-ext
+snapshot:
+  name_template: "{{ .Tag }}-dev"

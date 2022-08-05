@@ -67,7 +67,9 @@ func (r *TerraformResourceDataArgLayoutRule) visitFile(runner tflint.Runner, fil
 	for _, block := range body.Blocks {
 		switch block.Type {
 		case "resource", "data":
-			r.visitResourceDataBlock(runner, block)
+			if err := r.visitResourceDataBlock(runner, block); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -86,13 +88,11 @@ func (r *TerraformResourceDataArgLayoutRule) visitBlock(runner tflint.Runner, bl
 	file, _ := runner.GetFile(block.Range().Filename)
 	argGrps, isCorrectLayout := r.getSortedArgGrps(block)
 	var sortedArgHclTxts []string
-	var sortedArgs []Arg
 	isGapNeeded := false
 	for _, args := range argGrps {
 		if len(args) == 0 {
 			continue
 		}
-		sortedArgs = append(sortedArgs, args...)
 		if isGapNeeded {
 			sortedArgHclTxts = append(sortedArgHclTxts, "")
 		}
