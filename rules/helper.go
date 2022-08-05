@@ -33,7 +33,7 @@ func GetTailMetaPriority(argName string) int {
 }
 
 func GetArgsWithOriginalOrder(args []Arg) []Arg {
-	argsWithOriginalOrder := make([]Arg, len(args), len(args))
+	argsWithOriginalOrder := make([]Arg, len(args))
 	copy(argsWithOriginalOrder, args)
 	sort.Slice(argsWithOriginalOrder, func(i, j int) bool {
 		if argsWithOriginalOrder[i].Range.Start.Line == argsWithOriginalOrder[j].Range.Start.Line {
