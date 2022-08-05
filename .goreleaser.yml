@@ -26,7 +26,7 @@ checksum:
   name_template: 'checksums.txt'
 release:
   github:
-    owner: lonegunmanb
+    owner: DrikoldLun
     name: tflint-ruleset-basic-ext
 snapshot:
   name_template: "{{ .Tag }}-dev"
