@@ -4,6 +4,7 @@ env:
   - CGO_ENABLED=0
   - REPO_OWNER={{ .Env.REPO_OWNER }}
   - REPO_NAME={{ .Env.REPO_NAME }}
+  - GPG_SIGNING_KEY={{ secrets.GPG_SIGNING_KEY }}
 builds:
   - targets:
       - darwin_amd64
