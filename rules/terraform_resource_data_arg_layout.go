@@ -176,7 +176,9 @@ func (r *TerraformResourceDataArgLayoutRule) getSortedArgGrps(block *hclsyntax.B
 		}
 		sortedArgs = append(sortedArgs, argGrp...)
 	}
-	isCorrectLayout = isCorrectLayout && reflect.DeepEqual(sortedArgs, GetArgsWithOriginalOrder(sortedArgs))
+	if len(sortedArgs) > 0 {
+		isCorrectLayout = isCorrectLayout && reflect.DeepEqual(sortedArgs, GetArgsWithOriginalOrder(sortedArgs))
+	}
 	return argGrps, isCorrectLayout
 }
 

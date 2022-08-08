@@ -408,6 +408,12 @@ data "azurerm_resources" "example" {
 				},
 			},
 		},
+		{
+			Name: "8. empty block",
+			Content: `
+resource "azurerm_virtual_network" "vnet" {}`,
+			Expected: helper.Issues{},
+		},
 	}
 
 	rule := NewTerraformResourceDataArgLayoutRule()

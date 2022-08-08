@@ -85,6 +85,12 @@ locals {
 				},
 			},
 		},
+		{
+			Name: "4. empty locals block",
+			Content: `
+locals {}`,
+			Expected: helper.Issues{},
+		},
 	}
 	rule := NewTerraformLocalsOrderRule()
 
