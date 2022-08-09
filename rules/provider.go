@@ -12,4 +12,5 @@ var Rules = []tflint.Rule{
 	NewTerraformOutputOrderRule(),
 	NewTerraformLocalsOrderRule(),
 	NewTerraformResourceDataArgLayoutRule(),
+	NewTerraformCountIndexRule(),
 }
