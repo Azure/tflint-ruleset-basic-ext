@@ -168,15 +168,22 @@ resource "null_resource" "default1" {
 }
 
 resource "null_resource" "default2" {
-  value = <<-EMPTY
+  value = <<-SENTENCE
   hello, world!
-  EMPTY
+  SENTENCE
 }
 
 resource "null_resource" "default3" {
-  value = <<-EMPTY
+  value = <<-EXP
   tmp = "test"
-  EMPTY
+  EXP
+}
+
+resource "null_resource" "default4" {
+  value = <<-MULTILINES
+line1
+  line2
+  MULTILINES
 }`,
 			Expected: helper.Issues{},
 		},
