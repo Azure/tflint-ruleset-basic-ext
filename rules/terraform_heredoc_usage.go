@@ -73,7 +73,7 @@ func (r *TerraformHeredocUsageRule) checkHeredoc(runner tflint.Runner, fileName 
 			hereDocStartRange = token.Range
 		case hclsyntax.TokenCHeredoc:
 			inHeredoc = false
-			if subErr := r.checkHeredocIsJsonOrYml(runner, heredoc, hereDocStartRange); subErr != nil {
+			if subErr := r.checkHeredocIsJSONOrYAML(runner, heredoc, hereDocStartRange); subErr != nil {
 				err = multierror.Append(err, subErr)
 			}
 		case hclsyntax.TokenStringLit:
@@ -85,7 +85,7 @@ func (r *TerraformHeredocUsageRule) checkHeredoc(runner tflint.Runner, fileName 
 	return err
 }
 
-func (r *TerraformHeredocUsageRule) checkHeredocIsJsonOrYml(runner tflint.Runner, heredoc string, heredocStartRange hcl.Range) error {
+func (r *TerraformHeredocUsageRule) checkHeredocIsJSONOrYAML(runner tflint.Runner, heredoc string, heredocStartRange hcl.Range) error {
 	prunedHereDoc := strings.ReplaceAll(heredoc, "\t", "")
 	prunedHereDoc = strings.ReplaceAll(prunedHereDoc, " ", "")
 	prunedHereDoc = strings.ReplaceAll(prunedHereDoc, "\n", "")
