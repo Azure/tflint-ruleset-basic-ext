@@ -14,4 +14,5 @@ var Rules = []tflint.Rule{
 	NewTerraformResourceDataArgLayoutRule(),
 	NewTerraformCountIndexRule(),
 	NewTerraformHeredocUsageRule(),
+	NewTerraformSensitiveVariableRule(),
 }
