@@ -1,4 +1,4 @@
-# terraform_count_index
+# terraform_count_index_usage
 
 Check whether count.index is used as subscript of list/map
 
@@ -19,12 +19,12 @@ resource "null_resource" "default" {
 $ tflint
 1 issue(s) found:
 
-Warning: `count.index` is not recommended to be used as the subscript of list/map, use for_each instead (terraform_count_index)
+Warning: `count.index` is not recommended to be used as the subscript of list/map, use for_each instead (terraform_count_index_usage)
 
   on main.tf line 6:
   6:     list_value = var.my_list[count.index]
 
-Reference: https://github.com/terraform-linters/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_locals_order.md
+Reference: https://github.com/terraform-linters/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_locals_order_usage.md
 ```
 
 ## Why

@@ -12,8 +12,9 @@ var Rules = []tflint.Rule{
 	NewTerraformOutputOrderRule(),
 	NewTerraformLocalsOrderRule(),
 	NewTerraformResourceDataArgLayoutRule(),
-	NewTerraformCountIndexRule(),
+	NewTerraformCountIndexUsageRule(),
 	NewTerraformHeredocUsageRule(),
-	NewTerraformSensitiveVariableRule(),
+	NewTerraformSensitiveVariableNoDefaultRule(),
 	NewTerraformVersionsFileRule(),
+	NewTerraformRequiredVersionDeclarationRule(),
 }

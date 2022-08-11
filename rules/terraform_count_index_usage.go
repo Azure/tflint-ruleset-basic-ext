@@ -10,38 +10,38 @@ import (
 	"reflect"
 )
 
-// TerraformCountIndexRule checks whether count.index is used as subscript of list/map
-type TerraformCountIndexRule struct {
+// TerraformCountIndexUsageRule checks whether count.index is used as subscript of list/map
+type TerraformCountIndexUsageRule struct {
 	tflint.DefaultRule
 }
 
-// NewTerraformCountIndexRule returns a new rule
-func NewTerraformCountIndexRule() *TerraformCountIndexRule {
-	return &TerraformCountIndexRule{}
+// NewTerraformCountIndexUsageRule returns a new rule
+func NewTerraformCountIndexUsageRule() *TerraformCountIndexUsageRule {
+	return &TerraformCountIndexUsageRule{}
 }
 
 // Name returns the rule name
-func (r *TerraformCountIndexRule) Name() string {
-	return "terraform_count_index"
+func (r *TerraformCountIndexUsageRule) Name() string {
+	return "terraform_count_index_usage"
 }
 
 // Enabled returns whether the rule is enabled by default
-func (r *TerraformCountIndexRule) Enabled() bool {
+func (r *TerraformCountIndexUsageRule) Enabled() bool {
 	return false
 }
 
 // Severity returns the rule severity
-func (r *TerraformCountIndexRule) Severity() tflint.Severity {
+func (r *TerraformCountIndexUsageRule) Severity() tflint.Severity {
 	return tflint.WARNING
 }
 
 // Link returns the rule reference link
-func (r *TerraformCountIndexRule) Link() string {
+func (r *TerraformCountIndexUsageRule) Link() string {
 	return project.ReferenceLink(r.Name())
 }
 
 // Check checks whether count.index is used as subscript of list/map
-func (r *TerraformCountIndexRule) Check(runner tflint.Runner) error {
+func (r *TerraformCountIndexUsageRule) Check(runner tflint.Runner) error {
 
 	files, err := runner.GetFiles()
 	if err != nil {
@@ -55,7 +55,7 @@ func (r *TerraformCountIndexRule) Check(runner tflint.Runner) error {
 	return err
 }
 
-func (r *TerraformCountIndexRule) visitFile(runner tflint.Runner, file *hcl.File) error {
+func (r *TerraformCountIndexUsageRule) visitFile(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	var err error
 	for _, block := range blocks {
@@ -66,7 +66,7 @@ func (r *TerraformCountIndexRule) visitFile(runner tflint.Runner, file *hcl.File
 	return err
 }
 
-func (r *TerraformCountIndexRule) visitBlock(runner tflint.Runner, block *hclsyntax.Block) error {
+func (r *TerraformCountIndexUsageRule) visitBlock(runner tflint.Runner, block *hclsyntax.Block) error {
 	var err error
 	for _, attr := range block.Body.Attributes {
 		if subErr := r.visitExp(runner, attr.Expr); subErr != nil {
@@ -81,11 +81,11 @@ func (r *TerraformCountIndexRule) visitBlock(runner tflint.Runner, block *hclsyn
 	return err
 }
 
-func (r *TerraformCountIndexRule) visitExp(runner tflint.Runner, exp hclsyntax.Expression) error {
+func (r *TerraformCountIndexUsageRule) visitExp(runner tflint.Runner, exp hclsyntax.Expression) error {
 	return r.diagnose(runner, reflect.ValueOf(exp), false)
 }
 
-func (r *TerraformCountIndexRule) diagnose(runner tflint.Runner, x reflect.Value, asIndex bool) error {
+func (r *TerraformCountIndexUsageRule) diagnose(runner tflint.Runner, x reflect.Value, asIndex bool) error {
 	if !ast.NotNilFilter("", x) {
 		return nil
 	}

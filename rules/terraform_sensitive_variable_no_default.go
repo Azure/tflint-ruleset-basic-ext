@@ -9,38 +9,38 @@ import (
 	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 )
 
-// TerraformSensitiveVariableRule checks whether default value is set for sensitive variables
-type TerraformSensitiveVariableRule struct {
+// TerraformSensitiveVariableNoDefaultRule checks whether default value is set for sensitive variables
+type TerraformSensitiveVariableNoDefaultRule struct {
 	tflint.DefaultRule
 }
 
-// NewTerraformSensitiveVariableRule returns a new rule
-func NewTerraformSensitiveVariableRule() *TerraformSensitiveVariableRule {
-	return &TerraformSensitiveVariableRule{}
+// NewTerraformSensitiveVariableNoDefaultRule returns a new rule
+func NewTerraformSensitiveVariableNoDefaultRule() *TerraformSensitiveVariableNoDefaultRule {
+	return &TerraformSensitiveVariableNoDefaultRule{}
 }
 
 // Name returns the rule name
-func (r *TerraformSensitiveVariableRule) Name() string {
-	return "terraform_sensitive_variable"
+func (r *TerraformSensitiveVariableNoDefaultRule) Name() string {
+	return "terraform_sensitive_variable_no_default"
 }
 
 // Enabled returns whether the rule is enabled by default
-func (r *TerraformSensitiveVariableRule) Enabled() bool {
+func (r *TerraformSensitiveVariableNoDefaultRule) Enabled() bool {
 	return false
 }
 
 // Severity returns the rule severity
-func (r *TerraformSensitiveVariableRule) Severity() tflint.Severity {
+func (r *TerraformSensitiveVariableNoDefaultRule) Severity() tflint.Severity {
 	return tflint.WARNING
 }
 
 // Link returns the rule reference link
-func (r *TerraformSensitiveVariableRule) Link() string {
+func (r *TerraformSensitiveVariableNoDefaultRule) Link() string {
 	return project.ReferenceLink(r.Name())
 }
 
 // Check checks whether default value is set for sensitive variables
-func (r *TerraformSensitiveVariableRule) Check(runner tflint.Runner) error {
+func (r *TerraformSensitiveVariableNoDefaultRule) Check(runner tflint.Runner) error {
 
 	files, err := runner.GetFiles()
 	if err != nil {
@@ -54,7 +54,7 @@ func (r *TerraformSensitiveVariableRule) Check(runner tflint.Runner) error {
 	return err
 }
 
-func (r *TerraformSensitiveVariableRule) checkSensitiveVar(runner tflint.Runner, file *hcl.File) error {
+func (r *TerraformSensitiveVariableNoDefaultRule) checkSensitiveVar(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	var err error
 	for _, block := range blocks {

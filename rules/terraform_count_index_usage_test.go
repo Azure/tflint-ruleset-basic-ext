@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func Test_TerraformCountIndexRule(t *testing.T) {
+func Test_TerraformCountIndexUsageRule(t *testing.T) {
 	cases := []struct {
 		Name     string
 		JSON     bool
@@ -25,7 +25,7 @@ resource "null_resource" "default" {
 }`,
 			Expected: helper.Issues{
 				{
-					Rule:    NewTerraformCountIndexRule(),
+					Rule:    NewTerraformCountIndexUsageRule(),
 					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
 				},
 			},
@@ -40,7 +40,7 @@ resource "null_resource" "default" {
 }`,
 			Expected: helper.Issues{
 				{
-					Rule:    NewTerraformCountIndexRule(),
+					Rule:    NewTerraformCountIndexUsageRule(),
 					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
 				},
 			},
@@ -55,7 +55,7 @@ resource "null_resource" "default" {
 }`,
 			Expected: helper.Issues{
 				{
-					Rule:    NewTerraformCountIndexRule(),
+					Rule:    NewTerraformCountIndexUsageRule(),
 					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
 				},
 			},
@@ -85,15 +85,15 @@ resource "null_resource" "default3" {
 }`,
 			Expected: helper.Issues{
 				{
-					Rule:    NewTerraformCountIndexRule(),
+					Rule:    NewTerraformCountIndexUsageRule(),
 					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
 				},
 				{
-					Rule:    NewTerraformCountIndexRule(),
+					Rule:    NewTerraformCountIndexUsageRule(),
 					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
 				},
 				{
-					Rule:    NewTerraformCountIndexRule(),
+					Rule:    NewTerraformCountIndexUsageRule(),
 					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
 				},
 			},
@@ -115,7 +115,7 @@ resource "null_resource" "default" {
 			Expected: helper.Issues{},
 		},
 	}
-	rule := NewTerraformCountIndexRule()
+	rule := NewTerraformCountIndexUsageRule()
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
 			filename := "config.tf"

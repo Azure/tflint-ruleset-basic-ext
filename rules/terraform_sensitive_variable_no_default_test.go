@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func Test_TerraformSensitiveVariable(t *testing.T) {
+func Test_TerraformSensitiveVariableNoDefault(t *testing.T) {
 	cases := []struct {
 		Name     string
 		JSON     bool
@@ -40,7 +40,7 @@ variable "availability_zone_names" {
 }`,
 			Expected: helper.Issues{
 				{
-					Rule:    NewTerraformSensitiveVariableRule(),
+					Rule:    NewTerraformSensitiveVariableNoDefaultRule(),
 					Message: "Default value is not expected to be set for sensitive variable `availability_zone_names`",
 				},
 			},
@@ -65,17 +65,17 @@ variable "availability_zone_tag" {
 }`,
 			Expected: helper.Issues{
 				{
-					Rule:    NewTerraformSensitiveVariableRule(),
+					Rule:    NewTerraformSensitiveVariableNoDefaultRule(),
 					Message: "Default value is not expected to be set for sensitive variable `availability_zone_names`",
 				},
 				{
-					Rule:    NewTerraformSensitiveVariableRule(),
+					Rule:    NewTerraformSensitiveVariableNoDefaultRule(),
 					Message: "Default value is not expected to be set for sensitive variable `availability_zone_tag`",
 				},
 			},
 		},
 	}
-	rule := NewTerraformSensitiveVariableRule()
+	rule := NewTerraformSensitiveVariableNoDefaultRule()
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
