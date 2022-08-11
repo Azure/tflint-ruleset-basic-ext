@@ -9,6 +9,7 @@ import (
 	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 )
 
+// TerraformSensitiveVariableRule checks whether default value is set for sensitive variables
 type TerraformSensitiveVariableRule struct {
 	tflint.DefaultRule
 }
@@ -38,7 +39,7 @@ func (r *TerraformSensitiveVariableRule) Link() string {
 	return project.ReferenceLink(r.Name())
 }
 
-// Check checks whether single line comments is used
+// Check checks whether default value is set for sensitive variables
 func (r *TerraformSensitiveVariableRule) Check(runner tflint.Runner) error {
 
 	files, err := runner.GetFiles()

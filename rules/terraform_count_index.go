@@ -10,6 +10,7 @@ import (
 	"reflect"
 )
 
+// TerraformCountIndexRule checks whether count.index is used as subscript of list/map
 type TerraformCountIndexRule struct {
 	tflint.DefaultRule
 }
@@ -39,7 +40,7 @@ func (r *TerraformCountIndexRule) Link() string {
 	return project.ReferenceLink(r.Name())
 }
 
-// Check checks whether single line comments is used
+// Check checks whether count.index is used as subscript of list/map
 func (r *TerraformCountIndexRule) Check(runner tflint.Runner) error {
 
 	files, err := runner.GetFiles()

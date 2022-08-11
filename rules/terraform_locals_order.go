@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-// TerraformLocalsOrderRule checks whether comments use the preferred syntax
+// TerraformLocalsOrderRule checks whether local variables are sorted in alphabetic order
 type TerraformLocalsOrderRule struct {
 	tflint.DefaultRule
 }
@@ -42,7 +42,7 @@ func (r *TerraformLocalsOrderRule) Link() string {
 	return project.ReferenceLink(r.Name())
 }
 
-// Check checks whether single line comments is used
+// Check checks whether local variables are sorted in alphabetic order
 func (r *TerraformLocalsOrderRule) Check(runner tflint.Runner) error {
 
 	files, err := runner.GetFiles()

@@ -12,6 +12,7 @@ import (
 	"strings"
 )
 
+// TerraformHeredocUsageRule checks whether HEREDOC is used for JSON/YAML
 type TerraformHeredocUsageRule struct {
 	tflint.DefaultRule
 }
@@ -41,7 +42,7 @@ func (r *TerraformHeredocUsageRule) Link() string {
 	return project.ReferenceLink(r.Name())
 }
 
-// Check checks whether single line comments is used
+// Check checks whether HEREDOC is used for JSON/YAML
 func (r *TerraformHeredocUsageRule) Check(runner tflint.Runner) error {
 	files, err := runner.GetFiles()
 	if err != nil {

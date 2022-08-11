@@ -15,6 +15,7 @@ import (
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
 
+// TerraformResourceDataArgLayoutRule checks whether the arguments/attributes in resource/data block are arranged in expected Layout
 type TerraformResourceDataArgLayoutRule struct {
 	tflint.DefaultRule
 }
@@ -44,7 +45,7 @@ func (r *TerraformResourceDataArgLayoutRule) Link() string {
 	return project.ReferenceLink(r.Name())
 }
 
-// Check checks whether the arguments/attributes in a block are sorted in azure doc Layout
+// Check checks whether the arguments/attributes in resource/data block are arranged in expected Layout
 func (r *TerraformResourceDataArgLayoutRule) Check(runner tflint.Runner) error {
 	files, err := runner.GetFiles()
 	if err != nil {
