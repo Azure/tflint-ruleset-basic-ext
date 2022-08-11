@@ -8,7 +8,7 @@ import (
 	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 )
 
-// TerraformRequiredVersionDeclarationRule checks whether `versions.tf` only has 1 `terraform` block
+// TerraformRequiredVersionDeclarationRule checks whether required_version field is declared at the beginning of terraform block
 type TerraformRequiredVersionDeclarationRule struct {
 	tflint.DefaultRule
 }
@@ -38,7 +38,7 @@ func (r *TerraformRequiredVersionDeclarationRule) Link() string {
 	return project.ReferenceLink(r.Name())
 }
 
-// Check checks whether `versions.tf` only has 1 `terraform` block
+// Check checks whether required_version field is declared at the beginning of terraform block
 func (r *TerraformRequiredVersionDeclarationRule) Check(runner tflint.Runner) error {
 	files, err := runner.GetFiles()
 	if err != nil {
