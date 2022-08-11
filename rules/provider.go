@@ -15,4 +15,5 @@ var Rules = []tflint.Rule{
 	NewTerraformCountIndexRule(),
 	NewTerraformHeredocUsageRule(),
 	NewTerraformSensitiveVariableRule(),
+	NewTerraformVersionsFileRule(),
 }

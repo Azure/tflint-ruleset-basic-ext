@@ -13,4 +13,5 @@ This documentation describes a list of rules available by enabling this ruleset.
 | [terraform_locals_order](rules/terraform_locals_order.md)                         ||
 | [terraform_resource_data_arg_layout](rules/terraform_resource_data_arg_layout.md) ||
 | [terraform_count_index](rules/terraform_count_index.md)                           ||
-| [terraform_sensitive_variable](rules/terraform_sensitive_variable.md)                  ||
+| [terraform_sensitive_variable](rules/terraform_sensitive_variable.md)             ||
+| [terraform_versions_file](rules/terraform_versions_file.md)                       ||
