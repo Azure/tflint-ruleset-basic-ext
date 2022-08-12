@@ -1,15 +1,19 @@
 package rules
 
 import (
+	"fmt"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 	"sort"
+	"strings"
 )
 
 // Arg contains attrs and nested blocks defined in a block
 type Arg struct {
 	Name  string
 	Range hcl.Range
+	Attr  *hclsyntax.Attribute
 	Block *hclsyntax.Block
 }
 
@@ -53,4 +57,46 @@ func GetArgsWithOriginalOrder(args []Arg) []Arg {
 // IsRangeEmpty checks whether a range is empty
 func IsRangeEmpty(hclRange hcl.Range) bool {
 	return hclRange == hcl.Range{}
+}
+
+// PrintSortedAttrTxt print the sorted hcl text of an attribute
+func PrintSortedAttrTxt(src []byte, attr *hclsyntax.Attribute) (string, bool) {
+	isSorted := true
+	exp, isMap := attr.Expr.(*hclsyntax.ObjectConsExpr)
+	if !isMap {
+		return string(attr.Range().SliceBytes(src)), isSorted
+	}
+	var keys []string
+	itemTxts := make(map[string]string)
+	for _, item := range exp.Items {
+		key := string(item.KeyExpr.Range().SliceBytes(src))
+		itemTxt := fmt.Sprintf("%s = %s", key, string(item.ValueExpr.Range().SliceBytes(src)))
+		keys = append(keys, key)
+		itemTxts[key] = itemTxt
+	}
+	isSorted = sort.StringsAreSorted(keys)
+	if !isSorted {
+		sort.Strings(keys)
+	}
+	var sortedItemTxts []string
+	for _, key := range keys {
+		sortedItemTxts = append(sortedItemTxts, itemTxts[key])
+	}
+	sortedExpTxt := strings.Join(sortedItemTxts, "\n")
+	var sortedAttrTxt string
+	if RemoveSpaceAndLine(sortedExpTxt) == "" {
+		sortedAttrTxt = fmt.Sprintf("%s = {}", attr.Name)
+	} else {
+		sortedAttrTxt = fmt.Sprintf("%s = {\n%s\n}", attr.Name, sortedExpTxt)
+	}
+	sortedAttrTxt = string(hclwrite.Format([]byte(sortedAttrTxt)))
+	return sortedAttrTxt, isSorted
+}
+
+// RemoveSpaceAndLine remove space, "\t" and "\n" from the given string
+func RemoveSpaceAndLine(str string) string {
+	newStr := strings.ReplaceAll(str, " ", "")
+	newStr = strings.ReplaceAll(newStr, "\t", "")
+	newStr = strings.ReplaceAll(newStr, "\n", "")
+	return newStr
 }
