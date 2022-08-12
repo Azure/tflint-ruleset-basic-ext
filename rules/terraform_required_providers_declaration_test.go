@@ -144,6 +144,27 @@ required_providers {
 				},
 			},
 		},
+		{
+			Name: "6. Empty required_providers block",
+			Content: `
+terraform {
+  required_version = "~> 0.12.29"
+  required_providers {}
+}`,
+			Expected: helper.Issues{},
+		},
+		{
+			Name: "7. No parameter and only 1 parameter for provider",
+			Content: `
+terraform {
+  required_version = "~> 0.12.29"
+  required_providers {
+    aws = {}
+    azurerm = "~> 3.0.2"
+  }
+}`,
+			Expected: helper.Issues{},
+		},
 	}
 	rule := NewTerraformRequiredProvidersDeclarationRule()
 
