@@ -15,13 +15,11 @@ func Test_TerraformCountIndexUsageRule(t *testing.T) {
 		{
 			Name: "1. simple improper count.index usage example",
 			Content: `
-resource "null_resource" "default" {
+resource "azurerm_resource_group" "default" {
   count = length(var.my_list)
 
-  triggers = {
-    list_index = count.index
-    list_value = var.my_list[count.index]
-  }
+  name     = var.my_list[count.index]
+  location = "west"
 }`,
 			Expected: helper.Issues{
 				{
@@ -33,10 +31,11 @@ resource "null_resource" "default" {
 		{
 			Name: "2. complex improper count.index usage example1",
 			Content: `
-resource "null_resource" "default" {
+resource "azurerm_resource_group" "default" {
   count = length(var.my_list)
 
-  name  = local.a_map["${max(3, count.index)}"]
+  name     = local.a_map["${max(3, count.index)}"]
+  location = "west"
 }`,
 			Expected: helper.Issues{
 				{
@@ -48,10 +47,11 @@ resource "null_resource" "default" {
 		{
 			Name: "3. complex improper count.index usage example2",
 			Content: `
-resource "null_resource" "default" {
+resource "azurerm_resource_group" "default" {
   count = length(var.my_list)
 
-  name  = local.a_map[max(count.index, 3)*2 + local.set[0]]
+  name     = local.a_map[max(var.my_list[count.index], 3)*2 + local.set[0]]
+  location = "west"
 }`,
 			Expected: helper.Issues{
 				{
@@ -63,25 +63,25 @@ resource "null_resource" "default" {
 		{
 			Name: "4. multiple places with improper count.index usage",
 			Content: `
-resource "null_resource" "default1" {
+resource "azurerm_resource_group" "default1" {
   count = length(var.my_list)
 
-  triggers = {
-    list_index = count.index
-    list_value = var.my_list[count.index]
-  }
+  name     = var.my_list[count.index]
+  location = "west"
 }
 
-resource "null_resource" "default2" {
+resource "azurerm_resource_group" "default2" {
   count = length(var.my_list)
 
-  name  = local.a_map["${max(3, count.index)}"]
+  name     = local.a_map["${max(3, count.index)}"]
+  location = "west"
 }
 
-resource "null_resource" "default3" {
+resource "azurerm_resource_group" "default3" {
   count = length(var.my_list)
 
-  name  = local.a_map[max(count.index, 3)*2 + local.set[0]]
+  name     = local.a_map[max(var.my_list[count.index], 3)*2 + local.set[0]]
+  location = "west"
 }`,
 			Expected: helper.Issues{
 				{
@@ -101,16 +101,18 @@ resource "null_resource" "default3" {
 		{
 			Name: "5. proper count.index usage",
 			Content: `
-resource "null_resource" "default" {
+resource "azurerm_resource_group" "default1" {
   count = length(var.my_list)
 
-  name  = "my resource ${count.index}"
+  name     = "my resource ${count.index}"
+  location = "west"
 }
 
-resource "null_resource" "default" {
+resource "azurerm_resource_group" "default2" {
   count = length(var.my_list)
 
-  name  = local.a_map["my_resource"]
+  name     = local.a_map["my_resource"]
+  location = "west"
 }`,
 			Expected: helper.Issues{},
 		},

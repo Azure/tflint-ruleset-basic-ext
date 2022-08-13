@@ -15,8 +15,12 @@ func Test_TerraformHeredocUsageRule(t *testing.T) {
 		{
 			Name: "1. use heredoc to parse JSON",
 			Content: `
-resource "null_resource" "default" {
-  value = <<-JSON
+resource "azurerm_resource_group_policy_assignment" "example" {
+  name                 = "example"
+  resource_group_id    = azurerm_resource_group.example.id
+  policy_definition_id = azurerm_policy_definition.example.id
+
+  parameters = <<-JSON
 {
     "BigIntSupported": 995815895020119788889,
     "date": "20180322",
@@ -119,8 +123,12 @@ resource "null_resource" "default" {
 		{
 			Name: "2. use HEREDOC to parse YAML",
 			Content: `
-resource "null_resource" "default" {
-  value = <<-YAML
+resource "azurerm_resource_group_policy_assignment" "example" {
+  name                 = "example"
+  resource_group_id    = azurerm_resource_group.example.id
+  policy_definition_id = azurerm_policy_definition.example.id
+
+  parameters = <<-YAML
 name: release
 
 on:
@@ -162,25 +170,41 @@ jobs:
 		{
 			Name: "3. simple non-JSON/YAML text",
 			Content: `
-resource "null_resource" "default1" {
-  value = <<-EMPTY
+resource "azurerm_resource_group_policy_assignment" "example1" {
+  name                 = "example"
+  resource_group_id    = azurerm_resource_group.example.id
+  policy_definition_id = azurerm_policy_definition.example.id
+
+  parameters = <<-EMPTY
   EMPTY
 }
 
-resource "null_resource" "default2" {
-  value = <<-SENTENCE
+resource "azurerm_resource_group_policy_assignment" "example2" {
+  name                 = "example"
+  resource_group_id    = azurerm_resource_group.example.id
+  policy_definition_id = azurerm_policy_definition.example.id
+
+  parameters = <<-SENTENCE
   hello, world!
   SENTENCE
 }
 
-resource "null_resource" "default3" {
-  value = <<-EXP
+resource "azurerm_resource_group_policy_assignment" "example3" {
+  name                 = "example"
+  resource_group_id    = azurerm_resource_group.example.id
+  policy_definition_id = azurerm_policy_definition.example.id
+
+  parameters = <<-EXP
   tmp = "test"
   EXP
 }
 
-resource "null_resource" "default4" {
-  value = <<-MULTILINES
+resource "azurerm_resource_group_policy_assignment" "example4" {
+  name                 = "example"
+  resource_group_id    = azurerm_resource_group.example.id
+  policy_definition_id = azurerm_policy_definition.example.id
+
+  parameters = <<-MULTILINES
 line1
   line2
   MULTILINES
