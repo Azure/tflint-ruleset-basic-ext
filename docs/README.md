@@ -18,3 +18,4 @@ This documentation describes a list of rules available by enabling this ruleset.
 | [terraform_versions_file](rules/terraform_versions_file.md)                                   ||
 | [terraform_required_version_declaration](rules/terraform_required_version_declaration.md)     ||
 | [terraform_required_providers_declaration](rules/terraform_required_providers_declaration.md) ||
+| [terraform_module_provider_declaration](rules/terraform_module_provider_declaration.md) ||
