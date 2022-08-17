@@ -45,7 +45,10 @@ func (r *TerraformModuleProviderDeclarationRule) Check(runner tflint.Runner) err
 	if err != nil {
 		return err
 	}
-	for _, file := range files {
+	for filename, file := range files {
+		if ignoreFile(filename, r) {
+			continue
+		}
 		if subErr := r.checkFile(runner, file); subErr != nil {
 			err = multierror.Append(err, subErr)
 		}

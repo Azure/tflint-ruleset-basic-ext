@@ -43,6 +43,9 @@ func (r *TerraformVersionsFileRule) Check(runner tflint.Runner) error {
 	if err != nil {
 		return err
 	}
+	if ignoreFile("versions.tf", r) {
+		return nil
+	}
 	if file, versionsFileExists := files["versions.tf"]; versionsFileExists {
 		blocks := file.Body.(*hclsyntax.Body).Blocks
 		if len(blocks) != 1 || blocks[0].Type != "terraform" {

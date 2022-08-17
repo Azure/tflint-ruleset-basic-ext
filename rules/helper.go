@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
+	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 	"sort"
 	"strings"
 )
@@ -18,6 +19,8 @@ type Arg struct {
 }
 
 var headMetaArgPriority, tailMetaArgPriority = map[string]int{"for_each": 1, "count": 1, "provider": 0}, map[string]int{"lifecycle": 1, "depends_on": 0}
+
+var ignoreConfigLoad bool
 
 // IsHeadMeta checks whether a name represents a type of head Meta arg
 func IsHeadMeta(argName string) bool {
@@ -99,4 +102,39 @@ func RemoveSpaceAndLine(str string) string {
 	newStr = strings.ReplaceAll(newStr, "\t", "")
 	newStr = strings.ReplaceAll(newStr, "\n", "")
 	return newStr
+}
+
+func ignoreFile(filename string, rule tflint.Rule) bool {
+	isIgnore := false
+	ruleName := rule.Name()
+	ignorePatterns, isRuleIgnorePatternDefined := ignores[ruleName]
+	if isRuleIgnorePatternDefined {
+		for _, ignorePattern := range ignorePatterns {
+			if ignorePattern.MatchString(filename) {
+				isIgnore = true
+				break
+			}
+		}
+	}
+	retainPatterns, isRuleRetainPatternDefined := retains[ruleName]
+	if isRuleRetainPatternDefined {
+		for _, retainPattern := range retainPatterns {
+			if retainPattern.MatchString(filename) {
+				isIgnore = false
+				break
+			}
+		}
+	}
+	return isIgnore
+}
+
+func getExistedRules() map[string]tflint.Rule {
+	rules := make(map[string]tflint.Rule)
+	for _, rule := range Rules {
+		if rule.Name() == "basic_ext_ignore_config" {
+			continue
+		}
+		rules[rule.Name()] = rule
+	}
+	return rules
 }

@@ -51,7 +51,10 @@ func (r *TerraformResourceDataArgLayoutRule) Check(runner tflint.Runner) error {
 	if err != nil {
 		return err
 	}
-	for _, file := range files {
+	for filename, file := range files {
+		if ignoreFile(filename, r) {
+			continue
+		}
 		subErr := r.visitFile(runner, file)
 		if subErr != nil {
 			err = multierror.Append(err, subErr)

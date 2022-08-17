@@ -6,6 +6,7 @@ This documentation describes a list of rules available by enabling this ruleset.
 
 | Rule                                                                                          |Enabled by default|
 |-----------------------------------------------------------------------------------------------| --- |
+| [ignore_config_loader](rules/ignore_config_loader.md)                                         ||
 | [terraform_variable_separate](rules/terraform_variable_separate.md)                           ||
 | [terraform_output_separate](rules/terraform_output_separate.md)                               ||
 | [terraform_variable_order](rules/terraform_variable_order.md)                                 ||
@@ -18,4 +19,4 @@ This documentation describes a list of rules available by enabling this ruleset.
 | [terraform_versions_file](rules/terraform_versions_file.md)                                   ||
 | [terraform_required_version_declaration](rules/terraform_required_version_declaration.md)     ||
 | [terraform_required_providers_declaration](rules/terraform_required_providers_declaration.md) ||
-| [terraform_module_provider_declaration](rules/terraform_module_provider_declaration.md) ||
+| [terraform_module_provider_declaration](rules/terraform_module_provider_declaration.md)       ||

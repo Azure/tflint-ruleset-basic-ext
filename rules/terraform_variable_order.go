@@ -50,7 +50,10 @@ func (r *TerraformVariableOrderRule) Check(runner tflint.Runner) error {
 	if err != nil {
 		return err
 	}
-	for _, file := range files {
+	for filename, file := range files {
+		if ignoreFile(filename, r) {
+			continue
+		}
 		if subErr := r.checkVariableOrder(runner, file); subErr != nil {
 			err = multierror.Append(err, subErr)
 		}

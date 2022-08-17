@@ -46,7 +46,10 @@ func (r *TerraformSensitiveVariableNoDefaultRule) Check(runner tflint.Runner) er
 	if err != nil {
 		return err
 	}
-	for _, file := range files {
+	for filename, file := range files {
+		if ignoreFile(filename, r) {
+			continue
+		}
 		if subErr := r.checkSensitiveVar(runner, file); subErr != nil {
 			err = multierror.Append(err, subErr)
 		}

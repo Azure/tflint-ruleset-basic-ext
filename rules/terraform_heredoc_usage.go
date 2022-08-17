@@ -48,8 +48,11 @@ func (r *TerraformHeredocUsageRule) Check(runner tflint.Runner) error {
 	if err != nil {
 		return err
 	}
-	for fileName, file := range files {
-		if subErr := r.checkHeredoc(runner, fileName, file); subErr != nil {
+	for filename, file := range files {
+		if ignoreFile(filename, r) {
+			continue
+		}
+		if subErr := r.checkHeredoc(runner, filename, file); subErr != nil {
 			err = multierror.Append(err, subErr)
 		}
 	}

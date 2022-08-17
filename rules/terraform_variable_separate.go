@@ -45,7 +45,10 @@ func (r *TerraformVariableSeparateRule) Check(runner tflint.Runner) error {
 	if err != nil {
 		return err
 	}
-	for _, file := range files {
+	for filename, file := range files {
+		if ignoreFile(filename, r) {
+			continue
+		}
 		if subErr := r.checkVariableSeparate(runner, file); subErr != nil {
 			err = multierror.Append(err, subErr)
 		}

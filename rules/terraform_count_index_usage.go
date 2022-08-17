@@ -45,15 +45,18 @@ func (r *TerraformCountIndexUsageRule) Check(runner tflint.Runner) error {
 	if err != nil {
 		return err
 	}
-	for _, file := range files {
-		if subErr := r.visitFile(runner, file); subErr != nil {
+	for filename, file := range files {
+		if ignoreFile(filename, r) {
+			continue
+		}
+		if subErr := r.CheckFile(runner, file); subErr != nil {
 			err = multierror.Append(err, subErr)
 		}
 	}
 	return err
 }
 
-func (r *TerraformCountIndexUsageRule) visitFile(runner tflint.Runner, file *hcl.File) error {
+func (r *TerraformCountIndexUsageRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	var err error
 	for _, block := range blocks {
