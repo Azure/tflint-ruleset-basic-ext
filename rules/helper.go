@@ -20,8 +20,6 @@ type Arg struct {
 
 var headMetaArgPriority, tailMetaArgPriority = map[string]int{"for_each": 1, "count": 1, "provider": 0}, map[string]int{"lifecycle": 1, "depends_on": 0}
 
-var ignoreConfigLoad bool
-
 // IsHeadMeta checks whether a name represents a type of head Meta arg
 func IsHeadMeta(argName string) bool {
 	_, isHeadMeta := headMetaArgPriority[argName]
@@ -102,30 +100,6 @@ func RemoveSpaceAndLine(str string) string {
 	newStr = strings.ReplaceAll(newStr, "\t", "")
 	newStr = strings.ReplaceAll(newStr, "\n", "")
 	return newStr
-}
-
-func ignoreFile(filename string, rule tflint.Rule) bool {
-	isIgnore := false
-	ruleName := rule.Name()
-	ignorePatterns, isRuleIgnorePatternDefined := ignores[ruleName]
-	if isRuleIgnorePatternDefined {
-		for _, ignorePattern := range ignorePatterns {
-			if ignorePattern.MatchString(filename) {
-				isIgnore = true
-				break
-			}
-		}
-	}
-	retainPatterns, isRuleRetainPatternDefined := retains[ruleName]
-	if isRuleRetainPatternDefined {
-		for _, retainPattern := range retainPatterns {
-			if retainPattern.MatchString(filename) {
-				isIgnore = false
-				break
-			}
-		}
-	}
-	return isIgnore
 }
 
 func getExistedRules() map[string]tflint.Rule {

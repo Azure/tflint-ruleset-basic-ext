@@ -13,6 +13,7 @@ import (
 )
 
 var ignores, retains = make(map[string][]*regexp.Regexp), make(map[string][]*regexp.Regexp)
+var ignoreConfigLoaded = false
 
 // BasicExtIgnoreConfigRule checks whether count.index is used as subscript of list/map
 type BasicExtIgnoreConfigRule struct {
@@ -44,7 +45,6 @@ func (r *BasicExtIgnoreConfigRule) Link() string {
 	return project.ReferenceLink(r.Name())
 }
 
-// Check checks whether HEREDOC is used for JSON/YAML
 func (r *BasicExtIgnoreConfigRule) Check(runner tflint.Runner) error {
 	ignoreConfigFile := ".tflintignore.basic-ext"
 	if _, err := os.Stat(ignoreConfigFile); err != nil {
@@ -169,4 +169,37 @@ func (r *BasicExtIgnoreConfigRule) extractListExp(runner tflint.Runner, exp hcls
 		}
 	}
 	return strs, ranges, err
+}
+
+func loadIgnoreConfig(runner tflint.Runner) {
+	if ignoreConfigLoaded {
+		return
+	}
+	r := NewBasicExtIgnoreConfigRule()
+	r.Check(runner)
+	ignoreConfigLoaded = true
+}
+
+func ignoreFile(runner tflint.Runner, filename string, rulename string) bool {
+	loadIgnoreConfig(runner)
+	isIgnore := false
+	ignorePatterns, isRuleIgnorePatternDefined := ignores[rulename]
+	if isRuleIgnorePatternDefined {
+		for _, ignorePattern := range ignorePatterns {
+			if ignorePattern.MatchString(filename) {
+				isIgnore = true
+				break
+			}
+		}
+	}
+	retainPatterns, isRuleRetainPatternDefined := retains[rulename]
+	if isRuleRetainPatternDefined {
+		for _, retainPattern := range retainPatterns {
+			if retainPattern.MatchString(filename) {
+				isIgnore = false
+				break
+			}
+		}
+	}
+	return isIgnore
 }

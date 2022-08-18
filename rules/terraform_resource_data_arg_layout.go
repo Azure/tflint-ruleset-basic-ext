@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/terraform-linters/tflint-plugin-sdk/helper"
-	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 	"reflect"
 	"sort"
 	"strings"
 
-	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
@@ -17,12 +15,15 @@ import (
 
 // TerraformResourceDataArgLayoutRule checks whether the arguments/attributes in resource/data block are arranged in expected Layout
 type TerraformResourceDataArgLayoutRule struct {
-	tflint.DefaultRule
+	DefaultRule
 }
 
 // NewTerraformResourceDataArgLayoutRule returns a new rule
 func NewTerraformResourceDataArgLayoutRule() *TerraformResourceDataArgLayoutRule {
-	return &TerraformResourceDataArgLayoutRule{}
+	r := &TerraformResourceDataArgLayoutRule{}
+	r.DefaultRule.Rulename = r.Name()
+	r.DefaultRule.CheckFile = r.CheckFile
+	return r
 }
 
 // Name returns the rule name
@@ -30,40 +31,7 @@ func (r *TerraformResourceDataArgLayoutRule) Name() string {
 	return "terraform_resource_data_arg_layout"
 }
 
-// Enabled returns whether the rule is enabled by default
-func (r *TerraformResourceDataArgLayoutRule) Enabled() bool {
-	return false
-}
-
-// Severity returns the rule severity
-func (r *TerraformResourceDataArgLayoutRule) Severity() tflint.Severity {
-	return tflint.NOTICE
-}
-
-// Link returns the rule reference link
-func (r *TerraformResourceDataArgLayoutRule) Link() string {
-	return project.ReferenceLink(r.Name())
-}
-
-// Check checks whether the arguments/attributes in resource/data block are arranged in expected Layout
-func (r *TerraformResourceDataArgLayoutRule) Check(runner tflint.Runner) error {
-	files, err := runner.GetFiles()
-	if err != nil {
-		return err
-	}
-	for filename, file := range files {
-		if ignoreFile(filename, r) {
-			continue
-		}
-		subErr := r.visitFile(runner, file)
-		if subErr != nil {
-			err = multierror.Append(err, subErr)
-		}
-	}
-	return err
-}
-
-func (r *TerraformResourceDataArgLayoutRule) visitFile(runner tflint.Runner, file *hcl.File) error {
+func (r *TerraformResourceDataArgLayoutRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	body := file.Body.(*hclsyntax.Body)
 	if body == nil {
 		return nil

@@ -5,17 +5,19 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
-	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 )
 
 // TerraformRequiredVersionDeclarationRule checks whether required_version field is declared at the beginning of terraform block
 type TerraformRequiredVersionDeclarationRule struct {
-	tflint.DefaultRule
+	DefaultRule
 }
 
 // NewTerraformRequiredVersionDeclarationRule returns a new rule
 func NewTerraformRequiredVersionDeclarationRule() *TerraformRequiredVersionDeclarationRule {
-	return &TerraformRequiredVersionDeclarationRule{}
+	r := &TerraformRequiredVersionDeclarationRule{}
+	r.DefaultRule.Rulename = r.Name()
+	r.DefaultRule.CheckFile = r.CheckFile
+	return r
 }
 
 // Name returns the rule name
@@ -23,39 +25,7 @@ func (r *TerraformRequiredVersionDeclarationRule) Name() string {
 	return "terraform_required_version_declaration"
 }
 
-// Enabled returns whether the rule is enabled by default
-func (r *TerraformRequiredVersionDeclarationRule) Enabled() bool {
-	return false
-}
-
-// Severity returns the rule severity
-func (r *TerraformRequiredVersionDeclarationRule) Severity() tflint.Severity {
-	return tflint.NOTICE
-}
-
-// Link returns the rule reference link
-func (r *TerraformRequiredVersionDeclarationRule) Link() string {
-	return project.ReferenceLink(r.Name())
-}
-
-// Check checks whether required_version field is declared at the beginning of terraform block
-func (r *TerraformRequiredVersionDeclarationRule) Check(runner tflint.Runner) error {
-	files, err := runner.GetFiles()
-	if err != nil {
-		return err
-	}
-	for filename, file := range files {
-		if ignoreFile(filename, r) {
-			continue
-		}
-		if subErr := r.checkFile(runner, file); subErr != nil {
-			err = multierror.Append(err, subErr)
-		}
-	}
-	return err
-}
-
-func (r *TerraformRequiredVersionDeclarationRule) checkFile(runner tflint.Runner, file *hcl.File) error {
+func (r *TerraformRequiredVersionDeclarationRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	var err error
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	for _, block := range blocks {

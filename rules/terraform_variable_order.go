@@ -2,12 +2,10 @@ package rules
 
 import (
 	"fmt"
-	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
-	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 	"reflect"
 	"sort"
 	"strings"
@@ -15,12 +13,15 @@ import (
 
 // TerraformVariableOrderRule checks whether the variables are sorted in expected order
 type TerraformVariableOrderRule struct {
-	tflint.DefaultRule
+	DefaultRule
 }
 
 // NewTerraformVariableOrderRule returns a new rule
 func NewTerraformVariableOrderRule() *TerraformVariableOrderRule {
-	return &TerraformVariableOrderRule{}
+	r := &TerraformVariableOrderRule{}
+	r.DefaultRule.Rulename = r.Name()
+	r.DefaultRule.CheckFile = r.CheckFile
+	return r
 }
 
 // Name returns the rule name
@@ -28,40 +29,7 @@ func (r *TerraformVariableOrderRule) Name() string {
 	return "terraform_variable_order"
 }
 
-// Enabled returns whether the rule is enabled by default
-func (r *TerraformVariableOrderRule) Enabled() bool {
-	return false
-}
-
-// Severity returns the rule severity
-func (r *TerraformVariableOrderRule) Severity() tflint.Severity {
-	return tflint.NOTICE
-}
-
-// Link returns the rule reference link
-func (r *TerraformVariableOrderRule) Link() string {
-	return project.ReferenceLink(r.Name())
-}
-
-// Check checks whether the variables are sorted in expected order
-func (r *TerraformVariableOrderRule) Check(runner tflint.Runner) error {
-
-	files, err := runner.GetFiles()
-	if err != nil {
-		return err
-	}
-	for filename, file := range files {
-		if ignoreFile(filename, r) {
-			continue
-		}
-		if subErr := r.checkVariableOrder(runner, file); subErr != nil {
-			err = multierror.Append(err, subErr)
-		}
-	}
-	return err
-}
-
-func (r *TerraformVariableOrderRule) checkVariableOrder(runner tflint.Runner, file *hcl.File) error {
+func (r *TerraformVariableOrderRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	sortedVariableNames := r.getSortedVariableNames(blocks, false)
 	sortedVariableNames = append(sortedVariableNames, r.getSortedVariableNames(blocks, true)...)

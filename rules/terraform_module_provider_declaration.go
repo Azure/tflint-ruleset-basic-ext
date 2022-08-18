@@ -5,17 +5,19 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
-	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 )
 
 // TerraformModuleProviderDeclarationRule checks whether local variables are sorted in alphabetic order
 type TerraformModuleProviderDeclarationRule struct {
-	tflint.DefaultRule
+	DefaultRule
 }
 
 // NewTerraformModuleProviderDeclarationRule returns a new rule
 func NewTerraformModuleProviderDeclarationRule() *TerraformModuleProviderDeclarationRule {
-	return &TerraformModuleProviderDeclarationRule{}
+	r := &TerraformModuleProviderDeclarationRule{}
+	r.DefaultRule.Rulename = r.Name()
+	r.DefaultRule.CheckFile = r.CheckFile
+	return r
 }
 
 // Name returns the rule name
@@ -23,40 +25,12 @@ func (r *TerraformModuleProviderDeclarationRule) Name() string {
 	return "terraform_module_provider_declaration"
 }
 
-// Enabled returns whether the rule is enabled by default
-func (r *TerraformModuleProviderDeclarationRule) Enabled() bool {
-	return false
-}
-
 // Severity returns the rule severity
 func (r *TerraformModuleProviderDeclarationRule) Severity() tflint.Severity {
 	return tflint.WARNING
 }
 
-// Link returns the rule reference link
-func (r *TerraformModuleProviderDeclarationRule) Link() string {
-	return project.ReferenceLink(r.Name())
-}
-
-// Check checks whether local variables are sorted in alphabetic order
-func (r *TerraformModuleProviderDeclarationRule) Check(runner tflint.Runner) error {
-
-	files, err := runner.GetFiles()
-	if err != nil {
-		return err
-	}
-	for filename, file := range files {
-		if ignoreFile(filename, r) {
-			continue
-		}
-		if subErr := r.checkFile(runner, file); subErr != nil {
-			err = multierror.Append(err, subErr)
-		}
-	}
-	return err
-}
-
-func (r *TerraformModuleProviderDeclarationRule) checkFile(runner tflint.Runner, file *hcl.File) error {
+func (r *TerraformModuleProviderDeclarationRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	var err error
 	for _, block := range blocks {

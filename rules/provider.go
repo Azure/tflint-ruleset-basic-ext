@@ -6,7 +6,6 @@ import (
 
 // Rules is a list of all rules
 var Rules = []tflint.Rule{
-	NewBasicExtIgnoreConfigRule(),
 	NewTerraformVariableOrderRule(),
 	NewTerraformVariableSeparateRule(),
 	NewTerraformOutputSeparateRule(),
