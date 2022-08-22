@@ -38,3 +38,26 @@ func (r *DefaultRule) Link() string              { return project.ReferenceLink(
 func (r *DefaultRule) Enabled() bool             { return false }
 func (r *DefaultRule) Severity() tflint.Severity { return tflint.NOTICE }
 func (r *DefaultRule) Name() string              { return "" }
+
+func (r *DefaultRule) setName(n string) {
+	r.Rulename = n
+}
+
+func (r *DefaultRule) setCheckFunc(f func(runner tflint.Runner, file *hcl.File) error) {
+	r.CheckFile = f
+}
+
+type MyRule interface {
+	tflint.Rule
+	Name() string
+	CheckFile(runner tflint.Runner, file *hcl.File) error
+	setCheckFunc(f func(runner tflint.Runner, file *hcl.File) error)
+	setName(string)
+}
+
+func NewRule[T MyRule]() tflint.Rule {
+	r := *new(T)
+	r.setName(r.Name())
+	r.setCheckFunc(r.CheckFile)
+	return r
+}
