@@ -7,6 +7,7 @@ import (
 	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 )
 
+// TODO: 为何我们不直接使用 tflint.Rule？
 type Rule interface {
 	tflint.Rule
 }

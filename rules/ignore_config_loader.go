@@ -12,7 +12,12 @@ import (
 	"regexp"
 )
 
+// TODO:我们可不可以用 init() 来实现配置加载？ https://www.developer.com/languages/inti-function-golang/
+// TODO: 我们为什么要把两个变量写在一行？
+// TODO: 使用可变的全局变量是非常危险的坏味道
 var ignores, retains = make(map[string][]*regexp.Regexp), make(map[string][]*regexp.Regexp)
+
+// TODO: 使用全局变量控制流程是非常危险的坏味道
 var ignoreConfigLoaded = false
 
 // BasicExtIgnoreConfigRule checks whether count.index is used as subscript of list/map
@@ -21,6 +26,7 @@ type BasicExtIgnoreConfigRule struct {
 }
 
 // NewBasicExtIgnoreConfigRule returns a new rule
+// TODO: 为什么加载配置的逻辑需要写成一个 Rule？
 func NewBasicExtIgnoreConfigRule() *BasicExtIgnoreConfigRule {
 	return &BasicExtIgnoreConfigRule{}
 }
@@ -52,23 +58,26 @@ func (r *BasicExtIgnoreConfigRule) Check(runner tflint.Runner) error {
 			return runner.EmitIssue(r, fmt.Sprintf("Load basic-ext ignore config file failed:\n%s", err), hcl.Range{})
 		}
 		return nil
-	} else {
-		bytes, err := os.ReadFile(ignoreConfigFile)
-		if err != nil {
-			return runner.EmitIssue(r, fmt.Sprintf("Load basic-ext ignore config file failed:\n%s", err), hcl.Range{})
-		}
-		file, diags := hclsyntax.ParseConfig(bytes, ignoreConfigFile, hcl.InitialPos)
-		if diags.HasErrors() {
-			return runner.EmitIssue(r, fmt.Sprintf("Parse basic-ext ignore config file failed:\n%s", diags), hcl.Range{})
-		}
-		blocks := file.Body.(*hclsyntax.Body).Blocks
-		for _, block := range blocks {
-			if subErr := r.handleBlock(runner, block); subErr != nil {
-				err = multierror.Append(err, subErr)
-			}
-		}
-		return err
+		// TODO: 我们需要这个 else 吗？
 	}
+	bytes, err := os.ReadFile(ignoreConfigFile)
+	if err != nil {
+		return runner.EmitIssue(r, fmt.Sprintf("Load basic-ext ignore config file failed:\n%s", err), hcl.Range{})
+	}
+	// TODO:
+	file, diags := hclsyntax.ParseConfig(bytes, ignoreConfigFile, hcl.InitialPos)
+	if diags.HasErrors() {
+		return runner.EmitIssue(r, fmt.Sprintf("Parse basic-ext ignore config file failed:\n%s", diags), hcl.Range{})
+	}
+	//TODO: 我们是不是直接使用 Decode 比较省力？
+	blocks := file.Body.(*hclsyntax.Body).Blocks
+	for _, block := range blocks {
+		if subErr := r.handleBlock(runner, block); subErr != nil {
+			err = multierror.Append(err, subErr)
+		}
+	}
+	return err
+
 }
 
 func (r *BasicExtIgnoreConfigRule) handleBlock(runner tflint.Runner, block *hclsyntax.Block) error {
@@ -79,6 +88,7 @@ func (r *BasicExtIgnoreConfigRule) handleBlock(runner tflint.Runner, block *hcls
 	case "retain":
 		patterns = retains
 	default:
+		// TODO: Issue 应该是 Terraform 的问题
 		return runner.EmitIssue(
 			r,
 			fmt.Sprintf("block type `%s` not supported in basic-ext ignore config!", block.Type),
@@ -104,6 +114,7 @@ func (r *BasicExtIgnoreConfigRule) handleBlock(runner tflint.Runner, block *hcls
 	for i, patternStr := range patternStrs {
 		if patternRegExp, subErr := regexp.Compile(patternStr); subErr != nil {
 			if subErr := runner.EmitIssue(r, fmt.Sprintf("Pattern `%s` is not valid:\n5%s", patternStr, subErr), patternRanges[i]); subErr != nil {
+				//TODO:那上一层的真实的 subErr 怎么办？
 				err = multierror.Append(err, subErr)
 			}
 		} else {
@@ -114,6 +125,7 @@ func (r *BasicExtIgnoreConfigRule) handleBlock(runner tflint.Runner, block *hcls
 		for _, rule := range Rules {
 			patterns[rule.Name()] = append(patterns[rule.Name()], patternRegExps...)
 		}
+		//TODO: 对于异常情况，优先通过 return err 返回，降低逻辑的复杂度
 	} else if includeRulesDeclared && excludeRulesDeclared {
 		return runner.EmitIssue(r, "`include_rules` and `exclude_rules` can't be declared within the same block", block.DefRange())
 	} else {
@@ -121,14 +133,18 @@ func (r *BasicExtIgnoreConfigRule) handleBlock(runner tflint.Runner, block *hcls
 		var rules []string
 		var ruleRanges []hcl.Range
 		if includeRulesDeclared {
+			//TODO: 为什么 extractListExp 的结果一定是 rules?
 			rules, ruleRanges, subErr = r.extractListExp(runner, includeRulesArg.Expr)
 		} else {
 			rules, ruleRanges, subErr = r.extractListExp(runner, excludeRulesArg.Expr)
 		}
 		if subErr != nil {
+			//TODO: 是否可以直接 return，省略下面的 else？
 			err = multierror.Append(err, subErr)
 		} else {
 			existedRules := getExistedRules()
+			//TODO: 过深的嵌套深度,深度不应超过 3 层，并极力避免超过 2 层
+			//TODO: 这里除了对 Rule 的检查逻辑，以及迭代的 rules，其余与上层的 !includeRulesDeclared && !excludeRulesDeclared 基本一致
 			for i, ruleName := range rules {
 				if _, isRuleExisted := existedRules[ruleName]; !isRuleExisted {
 					if subErr := runner.EmitIssue(r, fmt.Sprintf("Rule `%s` doesn't exist", ruleName), ruleRanges[i]); subErr != nil {
@@ -176,6 +192,7 @@ func loadIgnoreConfig(runner tflint.Runner) {
 		return
 	}
 	r := NewBasicExtIgnoreConfigRule()
+	// TODO: 为什么我们在 load config 方法里 Check？或者说，为什么我们用 Check 来加载配置？
 	r.Check(runner)
 	ignoreConfigLoaded = true
 }
