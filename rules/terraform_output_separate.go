@@ -13,10 +13,7 @@ type TerraformOutputSeparateRule struct {
 
 // NewTerraformOutputSeparateRule returns a new rule
 func NewTerraformOutputSeparateRule() *TerraformOutputSeparateRule {
-	r := &TerraformOutputSeparateRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformOutputSeparateRule{}
 }
 
 // Name returns the rule name

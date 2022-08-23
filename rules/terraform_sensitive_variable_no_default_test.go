@@ -75,7 +75,7 @@ variable "availability_zone_tag" {
 			},
 		},
 	}
-	rule := NewTerraformSensitiveVariableNoDefaultRule()
+	rule := NewRule(NewTerraformSensitiveVariableNoDefaultRule())
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {

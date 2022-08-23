@@ -14,10 +14,7 @@ type TerraformCountIndexUsageRule struct {
 
 // NewTerraformCountIndexUsageRule returns a new rule
 func NewTerraformCountIndexUsageRule() *TerraformCountIndexUsageRule {
-	r := &TerraformCountIndexUsageRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformCountIndexUsageRule{}
 }
 
 // Name returns the rule name

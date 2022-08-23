@@ -13,10 +13,7 @@ type TerraformVariableSeparateRule struct {
 
 // NewTerraformVariableSeparateRule returns a new rule
 func NewTerraformVariableSeparateRule() *TerraformVariableSeparateRule {
-	r := &TerraformVariableSeparateRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformVariableSeparateRule{}
 }
 
 // Name returns the rule name

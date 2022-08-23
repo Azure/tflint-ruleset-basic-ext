@@ -64,7 +64,7 @@ provider "azurerm" {
 			Expected: helper.Issues{},
 		},
 	}
-	rule := NewTerraformModuleProviderDeclarationRule()
+	rule := NewRule(NewTerraformModuleProviderDeclarationRule())
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {

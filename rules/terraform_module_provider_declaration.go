@@ -14,10 +14,7 @@ type TerraformModuleProviderDeclarationRule struct {
 
 // NewTerraformModuleProviderDeclarationRule returns a new rule
 func NewTerraformModuleProviderDeclarationRule() *TerraformModuleProviderDeclarationRule {
-	r := &TerraformModuleProviderDeclarationRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformModuleProviderDeclarationRule{}
 }
 
 // Name returns the rule name

@@ -416,7 +416,7 @@ resource "azurerm_virtual_network" "vnet" {}`,
 		},
 	}
 
-	rule := NewTerraformResourceDataArgLayoutRule()
+	rule := NewRule(NewTerraformResourceDataArgLayoutRule())
 
 	for _, tc := range cases {
 		runner := helper.TestRunner(t, map[string]string{"config.tf": tc.Content})

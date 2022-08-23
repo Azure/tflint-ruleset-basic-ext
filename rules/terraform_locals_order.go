@@ -18,10 +18,7 @@ type TerraformLocalsOrderRule struct {
 
 // NewTerraformLocalsOrderRule returns a new rule
 func NewTerraformLocalsOrderRule() *TerraformLocalsOrderRule {
-	r := &TerraformLocalsOrderRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformLocalsOrderRule{}
 }
 
 // Name returns the rule name

@@ -70,7 +70,7 @@ resource "azurerm_virtual_network" "vnet" {
 			},
 		},
 	}
-	rule := NewTerraformVersionsFileRule()
+	rule := NewRule(NewTerraformVersionsFileRule())
 
 	for i, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {

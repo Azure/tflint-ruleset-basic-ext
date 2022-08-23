@@ -54,7 +54,7 @@ variable "image_id" {
 			},
 		},
 	}
-	rule := NewTerraformVariableSeparateRule()
+	rule := NewRule(NewTerraformVariableSeparateRule())
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {

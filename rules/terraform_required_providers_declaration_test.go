@@ -166,7 +166,7 @@ terraform {
 			Expected: helper.Issues{},
 		},
 	}
-	rule := NewTerraformRequiredProvidersDeclarationRule()
+	rule := NewRule(NewTerraformRequiredProvidersDeclarationRule())
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {

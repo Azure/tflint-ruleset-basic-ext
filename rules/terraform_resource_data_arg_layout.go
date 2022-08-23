@@ -20,10 +20,7 @@ type TerraformResourceDataArgLayoutRule struct {
 
 // NewTerraformResourceDataArgLayoutRule returns a new rule
 func NewTerraformResourceDataArgLayoutRule() *TerraformResourceDataArgLayoutRule {
-	r := &TerraformResourceDataArgLayoutRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformResourceDataArgLayoutRule{}
 }
 
 // Name returns the rule name

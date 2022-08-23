@@ -14,10 +14,7 @@ type TerraformRequiredVersionDeclarationRule struct {
 
 // NewTerraformRequiredVersionDeclarationRule returns a new rule
 func NewTerraformRequiredVersionDeclarationRule() *TerraformRequiredVersionDeclarationRule {
-	r := &TerraformRequiredVersionDeclarationRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformRequiredVersionDeclarationRule{}
 }
 
 // Name returns the rule name

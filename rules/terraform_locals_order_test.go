@@ -92,7 +92,7 @@ locals {}`,
 			Expected: helper.Issues{},
 		},
 	}
-	rule := NewTerraformLocalsOrderRule()
+	rule := NewRule(NewTerraformLocalsOrderRule())
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {

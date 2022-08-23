@@ -17,10 +17,7 @@ type TerraformOutputOrderRule struct {
 
 // NewTerraformOutputOrderRule returns a new rule
 func NewTerraformOutputOrderRule() *TerraformOutputOrderRule {
-	r := &TerraformOutputOrderRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformOutputOrderRule{}
 }
 
 // Name returns the rule name

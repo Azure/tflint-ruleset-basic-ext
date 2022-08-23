@@ -117,7 +117,7 @@ resource "azurerm_resource_group" "default2" {
 			Expected: helper.Issues{},
 		},
 	}
-	rule := NewTerraformCountIndexUsageRule()
+	rule := NewRule(&TerraformCountIndexUsageRule{})
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
 			filename := "config.tf"

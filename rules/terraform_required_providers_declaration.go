@@ -19,10 +19,7 @@ type TerraformRequiredProvidersDeclarationRule struct {
 
 // NewTerraformRequiredProvidersDeclarationRule returns a new rule
 func NewTerraformRequiredProvidersDeclarationRule() *TerraformRequiredProvidersDeclarationRule {
-	r := &TerraformRequiredProvidersDeclarationRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformRequiredProvidersDeclarationRule{}
 }
 
 // Name returns the rule name

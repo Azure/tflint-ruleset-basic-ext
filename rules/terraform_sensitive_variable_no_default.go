@@ -15,10 +15,7 @@ type TerraformSensitiveVariableNoDefaultRule struct {
 
 // NewTerraformSensitiveVariableNoDefaultRule returns a new rule
 func NewTerraformSensitiveVariableNoDefaultRule() *TerraformSensitiveVariableNoDefaultRule {
-	r := &TerraformSensitiveVariableNoDefaultRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformSensitiveVariableNoDefaultRule{}
 }
 
 // Name returns the rule name

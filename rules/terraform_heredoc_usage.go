@@ -18,10 +18,7 @@ type TerraformHeredocUsageRule struct {
 
 // NewTerraformHeredocUsageRule returns a new rule
 func NewTerraformHeredocUsageRule() *TerraformHeredocUsageRule {
-	r := &TerraformHeredocUsageRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformHeredocUsageRule{}
 }
 
 // Name returns the rule name

@@ -51,7 +51,7 @@ output "instance_ip_addr" {
 			},
 		},
 	}
-	rule := NewTerraformOutputSeparateRule()
+	rule := NewRule(NewTerraformOutputSeparateRule())
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {

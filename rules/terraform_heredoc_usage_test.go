@@ -212,7 +212,7 @@ line1
 			Expected: helper.Issues{},
 		},
 	}
-	rule := NewTerraformHeredocUsageRule()
+	rule := NewRule(NewTerraformHeredocUsageRule())
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
 			filename := "config.tf"

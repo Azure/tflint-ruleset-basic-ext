@@ -18,10 +18,7 @@ type TerraformVariableOrderRule struct {
 
 // NewTerraformVariableOrderRule returns a new rule
 func NewTerraformVariableOrderRule() *TerraformVariableOrderRule {
-	r := &TerraformVariableOrderRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformVariableOrderRule{}
 }
 
 // Name returns the rule name

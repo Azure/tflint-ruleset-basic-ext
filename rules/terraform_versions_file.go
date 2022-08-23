@@ -13,10 +13,7 @@ type TerraformVersionsFileRule struct {
 
 // NewTerraformVersionsFileRule returns a new rule
 func NewTerraformVersionsFileRule() *TerraformVersionsFileRule {
-	r := &TerraformVersionsFileRule{}
-	r.DefaultRule.Rulename = r.Name()
-	r.DefaultRule.CheckFile = r.CheckFile
-	return r
+	return &TerraformVersionsFileRule{}
 }
 
 // Name returns the rule name

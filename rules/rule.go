@@ -7,11 +7,6 @@ import (
 	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 )
 
-// TODO: 为何我们不直接使用 tflint.Rule？
-type Rule interface {
-	tflint.Rule
-}
-
 type DefaultRule struct {
 	tflint.DefaultRule
 	Rulename  string
@@ -24,7 +19,7 @@ func (r *DefaultRule) Check(runner tflint.Runner) error {
 		return err
 	}
 	for filename, file := range files {
-		if ignoreFile(runner, filename, r.Rulename) {
+		if ignoreFile(filename, r.Rulename) {
 			continue
 		}
 		if subErr := r.CheckFile(runner, file); subErr != nil {
@@ -47,7 +42,7 @@ func (r *DefaultRule) setCheckFunc(f func(runner tflint.Runner, file *hcl.File) 
 	r.CheckFile = f
 }
 
-type MyRule interface {
+type myRule interface {
 	tflint.Rule
 	Name() string
 	CheckFile(runner tflint.Runner, file *hcl.File) error
@@ -55,9 +50,29 @@ type MyRule interface {
 	setName(string)
 }
 
-func NewRule[T MyRule]() tflint.Rule {
-	r := *new(T)
+func NewRule(r myRule) tflint.Rule {
 	r.setName(r.Name())
 	r.setCheckFunc(r.CheckFile)
 	return r
+}
+
+func buildRules() {
+	myRules := []myRule{
+		NewTerraformVariableOrderRule(),
+		NewTerraformVariableSeparateRule(),
+		NewTerraformOutputSeparateRule(),
+		NewTerraformOutputOrderRule(),
+		NewTerraformLocalsOrderRule(),
+		NewTerraformResourceDataArgLayoutRule(),
+		NewTerraformCountIndexUsageRule(),
+		NewTerraformHeredocUsageRule(),
+		NewTerraformSensitiveVariableNoDefaultRule(),
+		NewTerraformVersionsFileRule(),
+		NewTerraformRequiredVersionDeclarationRule(),
+		NewTerraformRequiredProvidersDeclarationRule(),
+		NewTerraformModuleProviderDeclarationRule(),
+	}
+	for _, rule := range myRules {
+		Rules = append(Rules, NewRule(rule))
+	}
 }
