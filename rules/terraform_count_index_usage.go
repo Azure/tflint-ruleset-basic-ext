@@ -4,10 +4,11 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/terraform-linters/tflint-plugin-sdk/helper"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
 
-// TerraformCountIndexUsageRule checks whether count.index is used as subscript of list/map
+// TerraformCountIndexUsageRule checks whether count.index is used as subscript of list/map or the argument of function call
 type TerraformCountIndexUsageRule struct {
 	DefaultRule
 }
@@ -30,63 +31,76 @@ func (r *TerraformCountIndexUsageRule) Severity() tflint.Severity {
 func (r *TerraformCountIndexUsageRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	var err error
+	w := &countIndexCheckWalker{
+		f:      file,
+		runner: runner,
+		rule:   r,
+	}
 	for _, block := range blocks {
-		if subErr := r.visitBlock(runner, block); subErr != nil {
-			err = multierror.Append(err, subErr)
+		diag := hclsyntax.Walk(block, w)
+		if diag.HasErrors() {
+			err = multierror.Append(err, diag)
 		}
 	}
 	return err
 }
 
-func (r *TerraformCountIndexUsageRule) visitBlock(runner tflint.Runner, block *hclsyntax.Block) error {
-	var err error
-	for _, attr := range block.Body.Attributes {
-		if subErr := r.visitExp(runner, attr.Expr); subErr != nil {
-			err = multierror.Append(err, subErr)
-		}
-	}
-	for _, nestedBlock := range block.Body.Blocks {
-		if subErr := r.visitBlock(runner, nestedBlock); subErr != nil {
-			err = multierror.Append(err, subErr)
-		}
-	}
-	return err
+type countIndexCheckWalker struct {
+	f      *hcl.File
+	issues helper.Issues
+	runner tflint.Runner
+	rule   *TerraformCountIndexUsageRule
 }
 
-func (r *TerraformCountIndexUsageRule) visitExp(runner tflint.Runner, exp hclsyntax.Expression) error {
-	file, _ := runner.GetFile(exp.Range().Filename)
-	tokens, diags := hclsyntax.LexExpression(exp.Range().SliceBytes(file.Bytes), exp.Range().Filename, exp.StartRange().Start)
+func (w *countIndexCheckWalker) Enter(node hclsyntax.Node) hcl.Diagnostics {
+	switch node.(type) {
+	case *hclsyntax.FunctionCallExpr, *hclsyntax.IndexExpr:
+		err := w.checkCountIndex(node)
+		if err != nil {
+			return hcl.Diagnostics{
+				&hcl.Diagnostic{
+					Detail:     err.Error(),
+					Expression: node.(hcl.Expression),
+				},
+			}
+		}
+	}
+	return nil
+}
+
+func (w *countIndexCheckWalker) Exit(hclsyntax.Node) hcl.Diagnostics {
+	return nil
+}
+
+func (w *countIndexCheckWalker) checkCountIndex(node hclsyntax.Node) error {
+	tokens, diags := hclsyntax.LexExpression(node.Range().SliceBytes(w.f.Bytes), node.Range().Filename, node.Range().Start)
 	if diags.HasErrors() {
 		return diags
 	}
 	var err error
-	subscriptLevel := 0
-	for i, token := range tokens {
-		switch token.Type {
-		case hclsyntax.TokenOBrack:
-			subscriptLevel++
-		case hclsyntax.TokenCBrack:
-			subscriptLevel--
-		case hclsyntax.TokenIdent:
-			first := string(token.Bytes)
-			if subscriptLevel > 0 && first == "count" && i+2 < len(tokens) {
-				second := string(tokens[i+1].Bytes)
-				thrid := string(tokens[i+2].Bytes)
-				if second == "." && thrid == "index" {
-					subErr := runner.EmitIssue(
-						r,
-						"`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
-						hcl.Range{
-							Filename: token.Range.Filename,
-							Start:    token.Range.Start,
-							End:      tokens[i+2].Range.End,
-						},
-					)
-					if subErr != nil {
-						err = multierror.Append(err, subErr)
-					}
-				}
+	for i := range tokens {
+		if !(i+2 < len(tokens) && string(tokens[i].Bytes) == "count" && string(tokens[i+1].Bytes) == "." && string(tokens[i+2].Bytes) == "index") {
+			continue
+		}
+		issue := &helper.Issue{
+			Rule:    nil,
+			Message: "`count.index` is not recommended to be used as the subscript of list/map or the argument of function call, use for_each instead",
+			Range: hcl.Range{
+				Filename: tokens[i].Range.Filename,
+				Start:    tokens[i].Range.Start,
+				End:      tokens[i+2].Range.End,
+			},
+		}
+		isRuleExists := false
+		for _, existedIssue := range w.issues {
+			if *issue == *existedIssue {
+				isRuleExists = true
+				break
 			}
+		}
+		if !isRuleExists {
+			w.runner.EmitIssue(w.rule, issue.Message, issue.Range)
+			w.issues = append(w.issues, issue)
 		}
 	}
 	return err
@@ -114,7 +128,7 @@ func (r *TerraformCountIndexUsageRule) visitExp(runner tflint.Runner, exp hclsyn
 //		}
 //
 //	case reflect.Pointer:
-//		if x.Type().String() == "*hclsyntax.IndexExpr" {
+//		if x. == "*hclsyntax.IndexExpr" {
 //			asIndex = true
 //		} else if asIndex && x.Type().String() == "*hclsyntax.ScopeTraversalExpr" {
 //			traversal, isTraversal := x.Elem().FieldByName("Traversal").Interface().(hcl.Traversal)
