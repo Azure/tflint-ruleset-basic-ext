@@ -71,6 +71,7 @@ func buildRules() {
 		NewTerraformRequiredVersionDeclarationRule(),
 		NewTerraformRequiredProvidersDeclarationRule(),
 		NewTerraformModuleProviderDeclarationRule(),
+		NewTerraformVarNameConventionRule(),
 	}
 	for _, rule := range myRules {
 		Rules = append(Rules, NewRule(rule))

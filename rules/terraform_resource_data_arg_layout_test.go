@@ -16,55 +16,61 @@ func Test_TerraformResourceDataArgLayout(t *testing.T) {
 		{
 			Name: "1. separate attributes from blocks",
 			Content: `
-resource "azurerm_virtual_network" "vnet" {
-  name                = "myTFVnet"
-  address_space       = ["10.0.0.0/16"]
+resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = "example-continst"
   container {
-    name   = "sidecar"
-    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     memory = "1.5"
+    name   = "sidecar"
   }
+  ip_address_type     = "Public"
   dns_name_label      = "aci-label"
+  diagnostics {
+    log_analytics {
+      workspace_id  = "test"
+      workspace_key = "test"
+    }
+  }
   os_type             = "Linux"
-  container {
-    name   = "sidecar"
-    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
-    cpu    = "0.5"
-    memory = "1.5"
+  resource_group_name = azurerm_resource_group.example.name
+  dns_config {
+    nameservers = []
   }
   tags = {
-    Name = "VM network ${count.index}"
+    Name = "test"
   }
 }`,
 			Expected: helper.Issues{
 				{
 					Rule: NewTerraformResourceDataArgLayoutRule(),
 					Message: `Arguments are expected to be arranged in following Layout:
-resource "azurerm_virtual_network" "vnet" {
-  name                = "myTFVnet"
-  address_space       = ["10.0.0.0/16"]
+resource "azurerm_container_group" "example" {
   location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = "example-continst"
+  ip_address_type     = "Public"
   dns_name_label      = "aci-label"
   os_type             = "Linux"
+  resource_group_name = azurerm_resource_group.example.name
   tags = {
-    Name = "VM network ${count.index}"
+    Name = "test"
   }
 
   container {
-    name   = "sidecar"
-    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     memory = "1.5"
+    name   = "sidecar"
   }
-  container {
-    name   = "sidecar"
-    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
-    cpu    = "0.5"
-    memory = "1.5"
+  diagnostics {
+    log_analytics {
+      workspace_id  = "test"
+      workspace_key = "test"
+    }
+  }
+  dns_config {
+    nameservers = []
   }
 }`,
 				},
@@ -73,9 +79,16 @@ resource "azurerm_virtual_network" "vnet" {
 		{
 			Name: "2. check for nested block",
 			Content: `
-resource "azurerm_virtual_network" "vnet" {
-  name                = "myTFVnet"
-  address_space       = ["10.0.0.0/16"]
+resource "azurerm_container_group" "example" {
+  location            = azurerm_resource_group.example.location
+  name                = "example-continst"
+  ip_address_type     = "Public"
+  dns_name_label      = "aci-label"
+  os_type             = "Linux"
+  resource_group_name = azurerm_resource_group.example.name
+  tags = {
+    Name = "test"
+  }
 
   container {
     cpu    = "0.5"
@@ -109,23 +122,32 @@ container {
 		{
 			Name: "3. Gap between different types of args",
 			Content: `
-resource "azurerm_virtual_network" "vnet" {
-  count    = 4
-  provider = azurerm.europe
-  name                = "myTFVnet"
-  address_space       = ["10.0.0.0/16"]
+resource "azurerm_container_group" "example" {
+  count               = 4
+  provider            = azurerm.europe
   location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = "example-continst"
+  ip_address_type     = "Public"
   dns_name_label      = "aci-label"
   os_type             = "Linux"
+  resource_group_name = azurerm_resource_group.example.name
   tags = {
-    Name = "VM network ${count.index}"
+    Name = "container ${count.index}"
   }
   container {
-    name   = "sidecar"
-    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     memory = "1.5"
+    name   = "sidecar"
+  }
+  diagnostics {
+    log_analytics {
+      workspace_id  = "test"
+      workspace_key = "test"
+    }
+  }
+  dns_config {
+    nameservers = []
   }
   lifecycle {
     create_before_destroy = true
@@ -138,25 +160,34 @@ resource "azurerm_virtual_network" "vnet" {
 				{
 					Rule: NewTerraformResourceDataArgLayoutRule(),
 					Message: `Arguments are expected to be arranged in following Layout:
-resource "azurerm_virtual_network" "vnet" {
+resource "azurerm_container_group" "example" {
   count    = 4
   provider = azurerm.europe
 
-  name                = "myTFVnet"
-  address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = "example-continst"
+  ip_address_type     = "Public"
   dns_name_label      = "aci-label"
   os_type             = "Linux"
+  resource_group_name = azurerm_resource_group.example.name
   tags = {
-    Name = "VM network ${count.index}"
+    Name = "container ${count.index}"
   }
 
   container {
-    name   = "sidecar"
-    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     memory = "1.5"
+    name   = "sidecar"
+  }
+  diagnostics {
+    log_analytics {
+      workspace_id  = "test"
+      workspace_key = "test"
+    }
+  }
+  dns_config {
+    nameservers = []
   }
 
   lifecycle {
@@ -172,84 +203,82 @@ resource "azurerm_virtual_network" "vnet" {
 		{
 			Name: "4. Meta Arg",
 			Content: `
-resource "azurerm_virtual_network" "vnet" {
-  name          = "myTFVnet"
-  address_space = ["10.0.0.0/16"]
-  provider      = azurerm.europe
-  count         = 4
+resource "azurerm_container_group" "example" {
+  location            = azurerm_resource_group.example.location
+  count               = 4
+  name                = "example-continst"
+  provider            = azurerm.europe
+  ip_address_type     = "Public"
+  dns_name_label      = "aci-label"
+  os_type             = "Linux"
+  resource_group_name = azurerm_resource_group.example.name
   depends_on = [
     azurerm_resource_group.example
   ]
-  location = azurerm_resource_group.example.location
+  tags = {
+    Name = "container ${count.index}"
+  }
+  container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
+    memory = "1.5"
+    name   = "sidecar"
+  }
   lifecycle {
     create_before_destroy = true
-  }
-  resource_group_name = azurerm_resource_group.rg.name
-  dns_name_label      = "aci-label"
-  os_type             = "Linux"
-  tags = {
-    Name = "VM network ${count.index}"
-  }
-
-  container {
-    name   = "sidecar"
-    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
-    cpu    = "0.5"
-    memory = "1.5"
   }
 }
 
-resource "azurerm_virtual_network" "vnet" {
-  name          = "myTFVnet"
-  address_space = ["10.0.0.0/16"]
-  provider      = azurerm.europe
+resource "azurerm_container_group" "example" {
+  location            = azurerm_resource_group.example.location
+  for_each            = local.containers
+  name                = "example-continst"
+  provider            = azurerm.europe
+  ip_address_type     = "Public"
+  dns_name_label      = "aci-label"
+  os_type             = "Linux"
+  resource_group_name = azurerm_resource_group.example.name
   depends_on = [
     azurerm_resource_group.example
   ]
-  for_each = local.subnet_ids
-  location = azurerm_resource_group.example.location
+  tags = {
+    Name = "container ${each.key}"
+  }
+  container {
+    cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
+    memory = "1.5"
+    name   = "sidecar"
+  }
   lifecycle {
     create_before_destroy = true
-  }
-  resource_group_name = azurerm_resource_group.rg.name
-  dns_name_label      = "aci-label"
-  os_type             = "Linux"
-  tags = {
-    Name = "VM network ${each.key}"
-  }
-
-  container {
-    name   = "sidecar"
-    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
-    cpu    = "0.5"
-    memory = "1.5"
   }
 }`,
 			Expected: helper.Issues{
 				{
 					Rule: NewTerraformResourceDataArgLayoutRule(),
 					Message: `Arguments are expected to be arranged in following Layout:
-resource "azurerm_virtual_network" "vnet" {
+resource "azurerm_container_group" "example" {
   count    = 4
   provider = azurerm.europe
 
-  name                = "myTFVnet"
-  address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = "example-continst"
+  ip_address_type     = "Public"
   dns_name_label      = "aci-label"
   os_type             = "Linux"
+  resource_group_name = azurerm_resource_group.example.name
   tags = {
-    Name = "VM network ${count.index}"
+    Name = "container ${count.index}"
   }
 
   container {
-    name   = "sidecar"
-    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     memory = "1.5"
+    name   = "sidecar"
   }
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -261,27 +290,27 @@ resource "azurerm_virtual_network" "vnet" {
 				{
 					Rule: NewTerraformResourceDataArgLayoutRule(),
 					Message: `Arguments are expected to be arranged in following Layout:
-resource "azurerm_virtual_network" "vnet" {
-  for_each = local.subnet_ids
+resource "azurerm_container_group" "example" {
+  for_each = local.containers
   provider = azurerm.europe
 
-  name                = "myTFVnet"
-  address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = "example-continst"
+  ip_address_type     = "Public"
   dns_name_label      = "aci-label"
   os_type             = "Linux"
+  resource_group_name = azurerm_resource_group.example.name
   tags = {
-    Name = "VM network ${each.key}"
+    Name = "container ${each.key}"
   }
 
   container {
-    name   = "sidecar"
-    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     memory = "1.5"
+    name   = "sidecar"
   }
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -342,38 +371,27 @@ dynamic "container" {
 		{
 			Name: "6. correct layout",
 			Content: `
-resource "azurerm_virtual_network" "vnet" {
-  for_each = local.subnet_ids
+resource "azurerm_container_group" "example" {
+  count    = 4
   provider = azurerm.europe
 
-  name                = "myTFVnet"
-  address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = "example-continst"
+  ip_address_type     = "Public"
   dns_name_label      = "aci-label"
   os_type             = "Linux"
+  resource_group_name = azurerm_resource_group.example.name
   tags = {
-    Name = "VM network ${each.key}"
+    Name = "container ${count.index}"
   }
 
   container {
-    name   = "sidecar"
+    cpu    = "0.5"
     image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
-    cpu    = "0.5"
     memory = "1.5"
+    name   = "sidecar"
   }
-  container {
-    cpu    = "0.5"
-    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
-    memory = "1.5"
-    name   = "hello-world"
 
-    ports {
-      port     = 443
-      protocol = "TCP"
-    }
-  }
-  
   lifecycle {
     create_before_destroy = true
   }

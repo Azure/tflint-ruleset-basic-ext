@@ -24,7 +24,7 @@ Warning: `count.index` is not recommended to be used as the subscript of list/ma
   on main.tf line 6:
   6:     list_value = var.my_list[count.index]
 
-Reference: https://github.com/terraform-linters/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_locals_order_usage.md
+Reference: https://github.com/terraform-linters/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_count_index_usage.md
 ```
 
 ## Why
