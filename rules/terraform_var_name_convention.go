@@ -22,7 +22,7 @@ var builtInProperties = map[string]struct{}{
 	"timeouts":    {},
 }
 
-// TerraformVarNameConventionRule checks whether count.index is used as subscript of list/map or the argument of function call
+// TerraformVarNameConventionRule checks whether the var name is valid
 type TerraformVarNameConventionRule struct {
 	DefaultRule
 }
