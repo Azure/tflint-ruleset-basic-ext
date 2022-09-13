@@ -94,7 +94,7 @@ output "instance_ip_addr" {
 			},
 		},
 	}
-	rule := NewTerraformOutputOrderRule()
+	rule := NewRule(NewTerraformOutputOrderRule())
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {

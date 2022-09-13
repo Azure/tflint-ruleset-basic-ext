@@ -1,0 +1,6 @@
+{
+  "terraform_variable_order" : [
+    "^*$",
+    "!^variables2\\.tf$"
+  ]
+}

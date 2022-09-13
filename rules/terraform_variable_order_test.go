@@ -177,7 +177,7 @@ variable "docker_ports" {
 			},
 		},
 	}
-	rule := NewTerraformVariableOrderRule()
+	rule := NewRule(NewTerraformVariableOrderRule())
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {

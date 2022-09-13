@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
+	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 	"sort"
 	"strings"
 )
@@ -99,4 +100,15 @@ func RemoveSpaceAndLine(str string) string {
 	newStr = strings.ReplaceAll(newStr, "\t", "")
 	newStr = strings.ReplaceAll(newStr, "\n", "")
 	return newStr
+}
+
+func getExistedRules() map[string]tflint.Rule {
+	rules := make(map[string]tflint.Rule)
+	for _, rule := range Rules {
+		if rule.Name() == "basic_ext_ignore_config" {
+			continue
+		}
+		rules[rule.Name()] = rule
+	}
+	return rules
 }

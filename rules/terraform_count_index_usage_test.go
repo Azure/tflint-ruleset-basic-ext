@@ -24,12 +24,12 @@ resource "azurerm_resource_group" "default" {
 			Expected: helper.Issues{
 				{
 					Rule:    NewTerraformCountIndexUsageRule(),
-					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
+					Message: "`count.index` is not recommended to be used as the subscript of list/map or the argument of function call, use for_each instead",
 				},
 			},
 		},
 		{
-			Name: "2. complex improper count.index usage example1",
+			Name: "2. complex index",
 			Content: `
 resource "azurerm_resource_group" "default" {
   count = length(var.my_list)
@@ -40,12 +40,12 @@ resource "azurerm_resource_group" "default" {
 			Expected: helper.Issues{
 				{
 					Rule:    NewTerraformCountIndexUsageRule(),
-					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
+					Message: "`count.index` is not recommended to be used as the subscript of list/map or the argument of function call, use for_each instead",
 				},
 			},
 		},
 		{
-			Name: "3. complex improper count.index usage example2",
+			Name: "3. nested index",
 			Content: `
 resource "azurerm_resource_group" "default" {
   count = length(var.my_list)
@@ -56,12 +56,44 @@ resource "azurerm_resource_group" "default" {
 			Expected: helper.Issues{
 				{
 					Rule:    NewTerraformCountIndexUsageRule(),
-					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
+					Message: "`count.index` is not recommended to be used as the subscript of list/map or the argument of function call, use for_each instead",
 				},
 			},
 		},
 		{
-			Name: "4. multiple places with improper count.index usage",
+			Name: "4. function call",
+			Content: `
+resource "azurerm_resource_group" "default" {
+  count = length(var.my_list)
+
+  name     = element(["a", "b", "c"], count.index)
+  location = "west"
+}`,
+			Expected: helper.Issues{
+				{
+					Rule:    NewTerraformCountIndexUsageRule(),
+					Message: "`count.index` is not recommended to be used as the subscript of list/map or the argument of function call, use for_each instead",
+				},
+			},
+		},
+		{
+			Name: "5. complex function call",
+			Content: `
+resource "azurerm_resource_group" "default" {
+  count = length(var.my_list)
+
+  name     = element(["a", "b", "c"], element(["a", "b", "c"], var.my_list[count.index+1]))
+  location = "west"
+}`,
+			Expected: helper.Issues{
+				{
+					Rule:    NewTerraformCountIndexUsageRule(),
+					Message: "`count.index` is not recommended to be used as the subscript of list/map or the argument of function call, use for_each instead",
+				},
+			},
+		},
+		{
+			Name: "6. multiple places with improper count.index usage",
 			Content: `
 resource "azurerm_resource_group" "default1" {
   count = length(var.my_list)
@@ -86,20 +118,20 @@ resource "azurerm_resource_group" "default3" {
 			Expected: helper.Issues{
 				{
 					Rule:    NewTerraformCountIndexUsageRule(),
-					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
+					Message: "`count.index` is not recommended to be used as the subscript of list/map or the argument of function call , use for_each instead",
 				},
 				{
 					Rule:    NewTerraformCountIndexUsageRule(),
-					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
+					Message: "`count.index` is not recommended to be used as the subscript of list/map or the argument of function call, use for_each instead",
 				},
 				{
 					Rule:    NewTerraformCountIndexUsageRule(),
-					Message: "`count.index` is not recommended to be used as the subscript of list/map, use for_each instead",
+					Message: "`count.index` is not recommended to be used as the subscript of list/map or the argument of function call, use for_each instead",
 				},
 			},
 		},
 		{
-			Name: "5. proper count.index usage",
+			Name: "7. proper count.index usage",
 			Content: `
 resource "azurerm_resource_group" "default1" {
   count = length(var.my_list)
@@ -117,7 +149,7 @@ resource "azurerm_resource_group" "default2" {
 			Expected: helper.Issues{},
 		},
 	}
-	rule := NewTerraformCountIndexUsageRule()
+	rule := NewRule(&TerraformCountIndexUsageRule{})
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
 			filename := "config.tf"
