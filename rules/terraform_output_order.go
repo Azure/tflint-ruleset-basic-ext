@@ -26,9 +26,7 @@ func (r *TerraformOutputOrderRule) Name() string {
 }
 
 func (r *TerraformOutputOrderRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
-
 	blocks := file.Body.(*hclsyntax.Body).Blocks
-
 	var outputNames []string
 	var firstOutputBlockRange hcl.Range
 	outputHclTxts := make(map[string]string)
@@ -43,7 +41,6 @@ func (r *TerraformOutputOrderRule) CheckFile(runner tflint.Runner, file *hcl.Fil
 			outputHclTxts[outputName] = string(block.Range().SliceBytes(file.Bytes))
 		}
 	}
-
 	if sort.StringsAreSorted(outputNames) {
 		return nil
 	}

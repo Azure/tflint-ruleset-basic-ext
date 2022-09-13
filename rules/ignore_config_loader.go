@@ -61,23 +61,33 @@ func registerPatterns(ruleName string, regExps []string) {
 
 func ignoreFile(filename string, rulename string) bool {
 	isIgnore := false
-	ignorePatterns, isRuleIgnorePatternDefined := ignores[rulename]
-	if isRuleIgnorePatternDefined {
-		for _, ignorePattern := range ignorePatterns {
-			if ignorePattern.MatchString(filename) {
-				isIgnore = true
-				break
-			}
-		}
+	_, isDefined := ignores[rulename]
+	if isDefined {
+		isIgnore = matchIgnorePatterns(filename, rulename)
 	}
-	retainPatterns, isRuleRetainPatternDefined := retains[rulename]
-	if isRuleRetainPatternDefined {
-		for _, retainPattern := range retainPatterns {
-			if retainPattern.MatchString(filename) {
-				isIgnore = false
-				break
-			}
-		}
+	_, isDefined = retains[rulename]
+	if isDefined {
+		isIgnore = !matchRetainPatterns(filename, rulename)
 	}
 	return isIgnore
+}
+
+func matchIgnorePatterns(filename string, rulename string) bool {
+	patterns := ignores[rulename]
+	for _, pattern := range patterns {
+		if pattern.MatchString(filename) {
+			return true
+		}
+	}
+	return false
+}
+
+func matchRetainPatterns(filename string, rulename string) bool {
+	patterns := retains[rulename]
+	for _, pattern := range patterns {
+		if pattern.MatchString(filename) {
+			return true
+		}
+	}
+	return false
 }
