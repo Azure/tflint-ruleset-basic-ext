@@ -26,6 +26,7 @@ func (r *TerraformHeredocUsageRule) Name() string {
 	return "terraform_heredoc_usage"
 }
 
+// CheckFile checks whether HEREDOC is used for JSON/YAML
 func (r *TerraformHeredocUsageRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	fileName := file.Body.(*hclsyntax.Body).Range().Filename
 	tokens, diags := hclsyntax.LexConfig(file.Bytes, fileName, hcl.InitialPos)

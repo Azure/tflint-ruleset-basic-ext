@@ -21,6 +21,7 @@ func (r *TerraformVariableSeparateRule) Name() string {
 	return "terraform_variable_separate"
 }
 
+// CheckFile checks whether the variables are separated from other types of blocks
 func (r *TerraformVariableSeparateRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 
 	blocks := file.Body.(*hclsyntax.Body).Blocks

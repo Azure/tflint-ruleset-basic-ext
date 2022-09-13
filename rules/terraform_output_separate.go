@@ -21,6 +21,7 @@ func (r *TerraformOutputSeparateRule) Name() string {
 	return "terraform_output_separate"
 }
 
+// CheckFile checks whether the outputs are separated from other types of blocks
 func (r *TerraformOutputSeparateRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 
 	blocks := file.Body.(*hclsyntax.Body).Blocks

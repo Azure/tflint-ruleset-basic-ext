@@ -28,6 +28,7 @@ func (r *TerraformSensitiveVariableNoDefaultRule) Severity() tflint.Severity {
 	return tflint.WARNING
 }
 
+// CheckFile checks whether default value is set for sensitive variables
 func (r *TerraformSensitiveVariableNoDefaultRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	var err error

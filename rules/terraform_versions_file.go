@@ -21,6 +21,7 @@ func (r *TerraformVersionsFileRule) Name() string {
 	return "terraform_versions_file"
 }
 
+// CheckFile checks whether `versions.tf` only has 1 `terraform` block
 func (r *TerraformVersionsFileRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	body := file.Body.(*hclsyntax.Body)
 	filename := body.Range().Filename

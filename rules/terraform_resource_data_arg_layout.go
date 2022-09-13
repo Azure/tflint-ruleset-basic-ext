@@ -28,6 +28,7 @@ func (r *TerraformResourceDataArgLayoutRule) Name() string {
 	return "terraform_resource_data_arg_layout"
 }
 
+// CheckFile checks whether the arguments/attributes in resource/data block are arranged in expected Layout
 func (r *TerraformResourceDataArgLayoutRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	body := file.Body.(*hclsyntax.Body)
 	if body == nil {

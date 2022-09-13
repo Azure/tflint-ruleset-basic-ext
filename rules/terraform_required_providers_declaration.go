@@ -27,6 +27,7 @@ func (r *TerraformRequiredProvidersDeclarationRule) Name() string {
 	return "terraform_required_providers_declaration"
 }
 
+// CheckFile checks whether the required_providers block is declared in terraform block and whether the args of it are sorted in alphabetic order
 func (r *TerraformRequiredProvidersDeclarationRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	var err error
 	blocks := file.Body.(*hclsyntax.Body).Blocks

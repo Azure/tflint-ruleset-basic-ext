@@ -27,6 +27,7 @@ func (r *TerraformModuleProviderDeclarationRule) Severity() tflint.Severity {
 	return tflint.WARNING
 }
 
+// CheckFile checks whether local variables are sorted in alphabetic order
 func (r *TerraformModuleProviderDeclarationRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	var err error

@@ -22,6 +22,7 @@ func (r *TerraformRequiredVersionDeclarationRule) Name() string {
 	return "terraform_required_version_declaration"
 }
 
+// CheckFile checks whether required_version field is declared at the beginning of terraform block
 func (r *TerraformRequiredVersionDeclarationRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	var err error
 	blocks := file.Body.(*hclsyntax.Body).Blocks

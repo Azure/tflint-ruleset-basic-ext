@@ -25,6 +25,7 @@ func (r *TerraformOutputOrderRule) Name() string {
 	return "terraform_output_order"
 }
 
+// CheckFile checks whether the outputs are sorted in expected order
 func (r *TerraformOutputOrderRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	var outputNames []string

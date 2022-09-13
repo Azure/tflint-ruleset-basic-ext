@@ -42,6 +42,7 @@ func (r *TerraformVarNameConventionRule) Severity() tflint.Severity {
 	return tflint.WARNING
 }
 
+// CheckFile checks whether the var name is valid
 func (r *TerraformVarNameConventionRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	var err error
 	blocks := file.Body.(*hclsyntax.Body).Blocks

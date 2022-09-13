@@ -26,6 +26,7 @@ func (r *TerraformVariableOrderRule) Name() string {
 	return "terraform_variable_order"
 }
 
+// CheckFile checks whether the variables are sorted in expected order
 func (r *TerraformVariableOrderRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	sortedVariableNames := r.getSortedVariableNames(blocks, false)

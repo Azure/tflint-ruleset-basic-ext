@@ -7,12 +7,14 @@ import (
 	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 )
 
+// DefaultRule is the default template for rules in this plugin
 type DefaultRule struct {
 	tflint.DefaultRule
 	Rulename  string
 	CheckFile func(runner tflint.Runner, file *hcl.File) error
 }
 
+// Check checks whether the tf config files match given rules
 func (r *DefaultRule) Check(runner tflint.Runner) error {
 	files, err := runner.GetFiles()
 	if err != nil {
@@ -29,10 +31,17 @@ func (r *DefaultRule) Check(runner tflint.Runner) error {
 	return err
 }
 
-func (r *DefaultRule) Link() string              { return project.ReferenceLink(r.Rulename) }
-func (r *DefaultRule) Enabled() bool             { return false }
+// Link returns the rule reference link
+func (r *DefaultRule) Link() string { return project.ReferenceLink(r.Rulename) }
+
+// Enabled returns whether the rule is enabled by default
+func (r *DefaultRule) Enabled() bool { return false }
+
+// Severity returns the rule severity
 func (r *DefaultRule) Severity() tflint.Severity { return tflint.NOTICE }
-func (r *DefaultRule) Name() string              { return "" }
+
+// Name returns the rule name
+func (r *DefaultRule) Name() string { return "" }
 
 func (r *DefaultRule) setName(n string) {
 	r.Rulename = n
@@ -50,6 +59,7 @@ type myRule interface {
 	setName(string)
 }
 
+// NewRule returns a rule to be checked
 func NewRule(r myRule) tflint.Rule {
 	r.setName(r.Name())
 	r.setCheckFunc(r.CheckFile)

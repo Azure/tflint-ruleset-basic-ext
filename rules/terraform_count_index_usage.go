@@ -28,6 +28,7 @@ func (r *TerraformCountIndexUsageRule) Severity() tflint.Severity {
 	return tflint.WARNING
 }
 
+// CheckFile checks whether count.index is used as subscript of list/map or the argument of function call
 func (r *TerraformCountIndexUsageRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	var err error

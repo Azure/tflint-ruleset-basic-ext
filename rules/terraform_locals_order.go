@@ -26,6 +26,7 @@ func (r *TerraformLocalsOrderRule) Name() string {
 	return "terraform_locals_order"
 }
 
+// CheckFile checks whether local variables are sorted in alphabetic order
 func (r *TerraformLocalsOrderRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	var err error
