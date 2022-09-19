@@ -20,4 +20,4 @@ lint:
 tools:
 	go install golang.org/x/lint/golint@latest
 
-.PHONY: test e2e build install lint tools updateSubmodule
+.PHONY: test e2e build install lint tools
