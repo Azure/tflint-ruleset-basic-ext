@@ -13,7 +13,7 @@ func Test_TerraformLocalsOrderRule(t *testing.T) {
 		Expected helper.Issues
 	}{
 		{
-			Name: "correct locals variable order",
+			Name: "correct locals order",
 			Content: `
 locals {
   common_tags = {
@@ -44,7 +44,7 @@ locals {
 			Expected: helper.Issues{
 				{
 					Rule: NewTerraformLocalsOrderRule(),
-					Message: `Recommended locals variable order:
+					Message: `Recommended locals order:
 locals {
   common_tags = {
     Service = local.service_name
@@ -73,7 +73,7 @@ locals {
 			Expected: helper.Issues{
 				{
 					Rule: NewTerraformLocalsOrderRule(),
-					Message: `Recommended locals variable order:
+					Message: `Recommended locals order:
 locals {
   common_tags = {
     Service = local.service_name
@@ -84,7 +84,7 @@ locals {
 				},
 				{
 					Rule: NewTerraformLocalsOrderRule(),
-					Message: `Recommended locals variable order:
+					Message: `Recommended locals order:
 locals {
   owner        = "Community Team"
   service_name = "forum"

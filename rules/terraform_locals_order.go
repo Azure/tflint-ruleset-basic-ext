@@ -71,37 +71,55 @@ func (r *TerraformLocalsOrderRule) checkFile(runner tflint.Runner, file *hcl.Fil
 }
 
 func (r *TerraformLocalsOrderRule) checkLocalsOrder(runner tflint.Runner, block *hclsyntax.Block) error {
+	attributes := r.attributesInLineOrder(block)
+	if r.sorted(attributes) {
+		return nil
+	}
+	return r.suggestedOrder(runner, block, attributes)
+}
+
+func (r *TerraformLocalsOrderRule) suggestedOrder(runner tflint.Runner, block *hclsyntax.Block, attributes []*hclsyntax.Attribute) error {
+	sort.Slice(attributes, func(x, y int) bool {
+		return attributes[x].Name < attributes[y].Name
+	})
 	file, err := runner.GetFile(block.Range().Filename)
 	if err != nil {
 		return err
 	}
-	var attrNames, localsHclTxts []string
-	attrStartPos := make(map[string]hcl.Pos)
-	attrHclTxts := make(map[string]string)
-	for attrName, attr := range block.Body.Attributes {
-		attrNames = append(attrNames, attrName)
-		attrStartPos[attrName] = attr.NameRange.Start
-		attrHclTxts[attrName] = string(attr.SrcRange.SliceBytes(file.Bytes))
-	}
-	sort.Slice(attrNames, func(i, j int) bool {
-		if attrStartPos[attrNames[i]].Line == attrStartPos[attrNames[j]].Line {
-			return attrStartPos[attrNames[i]].Column < attrStartPos[attrNames[j]].Column
-		}
-		return attrStartPos[attrNames[i]].Line < attrStartPos[attrNames[j]].Line
-	})
-	if sort.StringsAreSorted(attrNames) {
-		return nil
-	}
-	sort.Strings(attrNames)
-	for _, attrName := range attrNames {
-		localsHclTxts = append(localsHclTxts, attrHclTxts[attrName])
+	var localsHclTxts []string
+	for _, a := range attributes {
+		localsHclTxts = append(localsHclTxts, string(a.SrcRange.SliceBytes(file.Bytes)))
 	}
 	localsHclTxt := strings.Join(localsHclTxts, "\n")
 	localsHclTxt = fmt.Sprintf("%s {\n%s\n}", block.Type, localsHclTxt)
-	localsHclTxt = string(hclwrite.Format([]byte(localsHclTxt)))
+	formattedTxt := string(hclwrite.Format([]byte(localsHclTxt)))
 	return runner.EmitIssue(
 		r,
-		fmt.Sprintf("Recommended locals variable order:\n%s", localsHclTxt),
+		fmt.Sprintf("Recommended locals order:\n%s", formattedTxt),
 		block.DefRange(),
 	)
+}
+
+func (r *TerraformLocalsOrderRule) sorted(attributes []*hclsyntax.Attribute) bool {
+	var attrNames []string
+	for _, a := range attributes {
+		attrNames = append(attrNames, a.Name)
+	}
+	return sort.StringsAreSorted(attrNames)
+}
+
+func (r *TerraformLocalsOrderRule) attributesInLineOrder(block *hclsyntax.Block) []*hclsyntax.Attribute {
+	var attributes []*hclsyntax.Attribute
+	for _, attribute := range block.Body.Attributes {
+		attributes = append(attributes, attribute)
+	}
+	sort.Slice(attributes, func(x, y int) bool {
+		posX := attributes[x].SrcRange.Start
+		posY := attributes[y].SrcRange.Start
+		if posX.Line == posY.Line {
+			return posX.Column < posY.Column
+		}
+		return posX.Line < posY.Line
+	})
+	return attributes
 }
