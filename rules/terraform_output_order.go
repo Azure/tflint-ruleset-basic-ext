@@ -44,7 +44,6 @@ func (r *TerraformOutputOrderRule) Link() string {
 
 // Check checks whether the outputs are sorted in expected order
 func (r *TerraformOutputOrderRule) Check(runner tflint.Runner) error {
-
 	files, err := runner.GetFiles()
 	if err != nil {
 		return err
@@ -58,36 +57,51 @@ func (r *TerraformOutputOrderRule) Check(runner tflint.Runner) error {
 }
 
 func (r *TerraformOutputOrderRule) checkOutputOrder(runner tflint.Runner, file *hcl.File) error {
-
 	blocks := file.Body.(*hclsyntax.Body).Blocks
-
-	var outputNames []string
-	var firstOutputBlockRange hcl.Range
-	outputHclTxts := make(map[string]string)
-	for _, block := range blocks {
-		switch block.Type {
-		case "output":
-			if IsRangeEmpty(firstOutputBlockRange) {
-				firstOutputBlockRange = block.DefRange()
-			}
-			outputName := block.Labels[0]
-			outputNames = append(outputNames, outputName)
-			outputHclTxts[outputName] = string(block.Range().SliceBytes(file.Bytes))
-		}
-	}
-
-	if sort.StringsAreSorted(outputNames) {
+	firstOutputBlockRange := r.firstOutputRange(blocks)
+	if firstOutputBlockRange == nil {
 		return nil
 	}
-	sort.Strings(outputNames)
+	if r.sorted(blocks) {
+		return nil
+	}
+	return r.suggestedOrder(runner, file, blocks, firstOutputBlockRange)
+}
+
+func (r *TerraformOutputOrderRule) suggestedOrder(runner tflint.Runner, file *hcl.File, blocks hclsyntax.Blocks, firstOutputBlockRange *hcl.Range) error {
+	sort.Slice(blocks, func(i, j int) bool {
+		return blocks[i].Labels[0] < blocks[j].Labels[0]
+	})
 	var sortedOutputHclTxts []string
-	for _, outputName := range outputNames {
-		sortedOutputHclTxts = append(sortedOutputHclTxts, outputHclTxts[outputName])
+	for _, b := range blocks {
+		sortedOutputHclTxts = append(sortedOutputHclTxts, string(b.Range().SliceBytes(file.Bytes)))
 	}
 	sortedOutputHclBytes := hclwrite.Format([]byte(strings.Join(sortedOutputHclTxts, "\n\n")))
 	return runner.EmitIssue(
 		r,
 		fmt.Sprintf("Recommended output order:\n%s", sortedOutputHclBytes),
-		firstOutputBlockRange,
+		*firstOutputBlockRange,
 	)
+}
+
+func (r *TerraformOutputOrderRule) sorted(blocks hclsyntax.Blocks) bool {
+	var outputNames []string
+	for _, block := range blocks {
+		switch block.Type {
+		case "output":
+			outputNames = append(outputNames, block.Labels[0])
+		}
+	}
+
+	return sort.StringsAreSorted(outputNames)
+}
+
+func (r *TerraformOutputOrderRule) firstOutputRange(blocks hclsyntax.Blocks) *hcl.Range {
+	for _, b := range blocks {
+		switch b.Type {
+		case "output":
+			return ref(b.DefRange())
+		}
+	}
+	return nil
 }

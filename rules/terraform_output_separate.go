@@ -54,29 +54,27 @@ func (r *TerraformOutputSeparateRule) Check(runner tflint.Runner) error {
 }
 
 func (r *TerraformOutputSeparateRule) checkOutputSeparate(runner tflint.Runner, file *hcl.File) error {
-
 	blocks := file.Body.(*hclsyntax.Body).Blocks
-
-	var firstNonOutputBlockRange hcl.Range
+	var firstNonOutputBlockRange *hcl.Range
 	outputDefined := false
 	for _, block := range blocks {
 		switch block.Type {
 		case "output":
-			if !outputDefined {
+			{
 				outputDefined = true
 			}
 		default:
-			if IsRangeEmpty(firstNonOutputBlockRange) {
-				firstNonOutputBlockRange = block.DefRange()
+			if firstNonOutputBlockRange == nil {
+				firstNonOutputBlockRange = ref(block.DefRange())
 			}
 		}
 	}
 
-	if outputDefined && !IsRangeEmpty(firstNonOutputBlockRange) {
+	if outputDefined && firstNonOutputBlockRange != nil {
 		return runner.EmitIssue(
 			r,
 			"Putting outputs and other types of blocks in the same file is not recommended",
-			firstNonOutputBlockRange,
+			*firstNonOutputBlockRange,
 		)
 	}
 	return nil

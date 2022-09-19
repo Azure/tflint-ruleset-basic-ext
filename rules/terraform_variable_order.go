@@ -64,13 +64,13 @@ func (r *TerraformVariableOrderRule) checkVariableOrder(runner tflint.Runner, fi
 	sortedVariableNames = append(sortedVariableNames, r.getSortedVariableNames(blocks, true)...)
 
 	var variableNames []string
-	var firstVarBlockRange hcl.Range
+	var firstVarBlockRange *hcl.Range
 	variableHclTxts := make(map[string]string)
 	for _, block := range blocks {
 		switch block.Type {
 		case "variable":
-			if IsRangeEmpty(firstVarBlockRange) {
-				firstVarBlockRange = block.DefRange()
+			if firstVarBlockRange == nil {
+				firstVarBlockRange = ref(block.DefRange())
 			}
 			variableName := block.Labels[0]
 			variableNames = append(variableNames, variableName)
@@ -89,7 +89,7 @@ func (r *TerraformVariableOrderRule) checkVariableOrder(runner tflint.Runner, fi
 	return runner.EmitIssue(
 		r,
 		fmt.Sprintf("Recommended variable order:\n%s", sortedVariableHclBytes),
-		firstVarBlockRange,
+		*firstVarBlockRange,
 	)
 }
 

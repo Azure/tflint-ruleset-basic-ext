@@ -57,7 +57,7 @@ func (r *TerraformVariableSeparateRule) checkVariableSeparate(runner tflint.Runn
 
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 
-	var firstNonVarBlockRange hcl.Range
+	var firstNonVarBlockRange *hcl.Range
 	variableDefined := false
 	for _, block := range blocks {
 		switch block.Type {
@@ -66,17 +66,17 @@ func (r *TerraformVariableSeparateRule) checkVariableSeparate(runner tflint.Runn
 				variableDefined = true
 			}
 		default:
-			if IsRangeEmpty(firstNonVarBlockRange) {
-				firstNonVarBlockRange = block.DefRange()
+			if firstNonVarBlockRange == nil {
+				firstNonVarBlockRange = ref(block.DefRange())
 			}
 		}
 	}
 
-	if variableDefined && !IsRangeEmpty(firstNonVarBlockRange) {
+	if variableDefined && firstNonVarBlockRange != nil {
 		return runner.EmitIssue(
 			r,
 			"Putting variables and other types of blocks in the same file is not recommended",
-			firstNonVarBlockRange,
+			*firstNonVarBlockRange,
 		)
 	}
 	return nil

@@ -44,6 +44,6 @@ func GetArgsWithOriginalOrder(args []Arg) []Arg {
 	return argsWithOriginalOrder
 }
 
-func IsRangeEmpty(hclRange hcl.Range) bool {
-	return hclRange == hcl.Range{}
+func ref(hr hcl.Range) *hcl.Range {
+	return &hr
 }
