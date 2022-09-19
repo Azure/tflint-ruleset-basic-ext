@@ -13,7 +13,7 @@ func Test_TerraformLocalsOrderRule(t *testing.T) {
 		Expected helper.Issues
 	}{
 		{
-			Name: "1. correct locals variable order",
+			Name: "correct locals variable order",
 			Content: `
 locals {
   common_tags = {
@@ -25,7 +25,14 @@ locals {
 			Expected: helper.Issues{},
 		},
 		{
-			Name: "2. sorting in alphabetic order",
+			Name: "empty locals block",
+			Content: `
+locals {}
+`,
+			Expected: helper.Issues{},
+		},
+		{
+			Name: "sorting in alphabetic order",
 			Content: `
 locals {
   instance_ids = concat(aws_instance.blue.*.id, aws_instance.green.*.id)

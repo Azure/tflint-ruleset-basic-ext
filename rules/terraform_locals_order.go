@@ -44,7 +44,6 @@ func (r *TerraformLocalsOrderRule) Link() string {
 
 // Check checks whether single line comments is used
 func (r *TerraformLocalsOrderRule) Check(runner tflint.Runner) error {
-
 	files, err := runner.GetFiles()
 	if err != nil {
 		return err
@@ -61,11 +60,11 @@ func (r *TerraformLocalsOrderRule) checkFile(runner tflint.Runner, file *hcl.Fil
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	var err error
 	for _, block := range blocks {
-		switch block.Type {
-		case "locals":
-			if subErr := r.checkLocalsOrder(runner, block); subErr != nil {
-				err = multierror.Append(err, subErr)
-			}
+		if block.Type != "locals" {
+			continue
+		}
+		if subErr := r.checkLocalsOrder(runner, block); subErr != nil {
+			err = multierror.Append(err, subErr)
 		}
 	}
 	return err
