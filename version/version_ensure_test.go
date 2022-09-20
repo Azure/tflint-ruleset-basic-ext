@@ -24,9 +24,7 @@ func Test_EnsureVersionHasBeenBumpedUp(t *testing.T) {
 	for _, tag := range tags {
 		v := tag.GetName()
 		if semver.IsValid(v) {
-			if semver.Compare(v, currentVersion) >= 0 {
-				t.Fatalf("latest version: %s, current version %s, please update current version in project/main.go", v, currentVersion)
-			}
+			t.Fatalf("latest version: %s, current version %s, please update current version in project/main.go", v, currentVersion)
 		}
 	}
 }
