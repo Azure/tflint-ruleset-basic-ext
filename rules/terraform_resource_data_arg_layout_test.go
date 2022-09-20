@@ -139,8 +139,8 @@ resource "azurerm_virtual_network" "vnet" {
 					Rule: NewTerraformResourceDataArgLayoutRule(),
 					Message: `Arguments are expected to be arranged in following Layout:
 resource "azurerm_virtual_network" "vnet" {
-  count    = 4
   provider = azurerm.europe
+  count    = 4
 
   name                = "myTFVnet"
   address_space       = ["10.0.0.0/16"]
@@ -159,12 +159,13 @@ resource "azurerm_virtual_network" "vnet" {
     memory = "1.5"
   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
   depends_on = [
     azurerm_resource_group.example
   ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }`,
 				},
 			},
@@ -172,8 +173,8 @@ resource "azurerm_virtual_network" "vnet" {
 		{
 			Name: "4. Meta Arg",
 			Content: `
-resource "azurerm_virtual_network" "vnet" {
-  name          = "myTFVnet"
+resource "azurerm_virtual_network" "vnet1" {
+  name          = "myTFVnet1"
   address_space = ["10.0.0.0/16"]
   provider      = azurerm.europe
   count         = 4
@@ -199,8 +200,8 @@ resource "azurerm_virtual_network" "vnet" {
   }
 }
 
-resource "azurerm_virtual_network" "vnet" {
-  name          = "myTFVnet"
+resource "azurerm_virtual_network" "vnet2" {
+  name          = "myTFVnet2"
   address_space = ["10.0.0.0/16"]
   provider      = azurerm.europe
   depends_on = [
@@ -229,11 +230,11 @@ resource "azurerm_virtual_network" "vnet" {
 				{
 					Rule: NewTerraformResourceDataArgLayoutRule(),
 					Message: `Arguments are expected to be arranged in following Layout:
-resource "azurerm_virtual_network" "vnet" {
-  count    = 4
+resource "azurerm_virtual_network" "vnet1" {
   provider = azurerm.europe
+  count    = 4
 
-  name                = "myTFVnet"
+  name                = "myTFVnet1"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -250,22 +251,24 @@ resource "azurerm_virtual_network" "vnet" {
     memory = "1.5"
   }
   
-  lifecycle {
-    create_before_destroy = true
-  }
   depends_on = [
     azurerm_resource_group.example
   ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }`,
 				},
+
 				{
 					Rule: NewTerraformResourceDataArgLayoutRule(),
 					Message: `Arguments are expected to be arranged in following Layout:
-resource "azurerm_virtual_network" "vnet" {
-  for_each = local.subnet_ids
+resource "azurerm_virtual_network" "vnet2" {
   provider = azurerm.europe
+  for_each = local.subnet_ids
 
-  name                = "myTFVnet"
+  name                = "myTFVnet2"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -281,13 +284,14 @@ resource "azurerm_virtual_network" "vnet" {
     cpu    = "0.5"
     memory = "1.5"
   }
-  
-  lifecycle {
-    create_before_destroy = true
-  }
+
   depends_on = [
     azurerm_resource_group.example
   ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }`,
 				},
 			},
@@ -343,8 +347,8 @@ dynamic "container" {
 			Name: "6. correct layout",
 			Content: `
 resource "azurerm_virtual_network" "vnet" {
-  for_each = local.subnet_ids
   provider = azurerm.europe
+  for_each = local.subnet_ids
 
   name                = "myTFVnet"
   address_space       = ["10.0.0.0/16"]
@@ -373,13 +377,14 @@ resource "azurerm_virtual_network" "vnet" {
       protocol = "TCP"
     }
   }
-  
-  lifecycle {
-    create_before_destroy = true
-  }
+
   depends_on = [
     azurerm_resource_group.example
   ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }`,
 			Expected: helper.Issues{},
 		},
@@ -418,7 +423,7 @@ data "azurerm_resources" "example" {
 			if err := rule.Check(runner); err != nil {
 				t.Fatalf("Unexpected error occurred: %s", err)
 			}
-			AssertIssues(t, tc.Expected, runner.Issues)
+			AssertIssuesWithoutRange(t, tc.Expected, runner.Issues)
 		})
 	}
 }

@@ -2,14 +2,15 @@ package rules
 
 import (
 	"fmt"
+	"sort"
+	"strings"
+
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
-	"sort"
-	"strings"
 )
 
 // TerraformLocalsOrderRule checks whether comments use the preferred syntax

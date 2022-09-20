@@ -22,6 +22,17 @@ func AssertIssues(t *testing.T, expected helper.Issues, actual helper.Issues) {
 	}
 }
 
+// AssertIssuesWithoutRange is an assertion helper for comparing issues except for range.
+func AssertIssuesWithoutRange(t *testing.T, expected helper.Issues, actual helper.Issues) {
+	opts := []cmp.Option{
+		cmpopts.IgnoreFields(helper.Issue{}, "Range"),
+		messageComparer(),
+	}
+	if !cmp.Equal(expected, actual, opts...) {
+		t.Fatalf("Expected issues are not matched:\n %s\n", cmp.Diff(expected, actual, opts...))
+	}
+}
+
 func messageComparer() cmp.Option {
 	return cmp.Comparer(func(x, y helper.Issue) bool {
 		return reflect.TypeOf(x.Rule) == reflect.TypeOf(y.Rule) && pruneMessage(x.Message) == pruneMessage(y.Message)
