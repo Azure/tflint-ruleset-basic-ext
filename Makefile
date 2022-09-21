@@ -9,9 +9,8 @@ e2e:
 build:
 	go build
 
-install:build
-	mkdir -p ~/.tflint.d/plugins
-	mv ./tflint-ruleset-basic-ext ~/.tflint.d/plugins
+install:
+	go run install/main.go
 
 lint:
 	golint --set_exit_status $$(go list ./...)

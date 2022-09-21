@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  tflint:
+  e2e:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
