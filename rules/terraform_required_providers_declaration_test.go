@@ -90,6 +90,22 @@ terraform {
       version = "~> 3.0.2"
       source  = "hashicorp/azurerm"
     }
+	b = {
+      version = "~> 3.0.2"
+      source  = "hashicorp/azurerm"
+    }
+	c = {
+      version = "~> 3.0.2"
+      source  = "hashicorp/azurerm"
+    }
+	d = {
+      version = "~> 3.0.2"
+      source  = "hashicorp/azurerm"
+    }
+	e = {
+      version = "~> 3.0.2"
+      source  = "hashicorp/azurerm"
+    }
   }
 }`,
 			Expected: helper.Issues{
@@ -105,6 +121,38 @@ aws = {
 					Rule: NewTerraformRequiredProvidersDeclarationRule(),
 					Message: "Parameters of provider `azurerm` are expected to be sorted as follows:" + `
 azurerm = {
+  source  = "hashicorp/azurerm"
+  version = "~> 3.0.2"
+}`,
+				},
+				{
+					Rule: NewTerraformRequiredProvidersDeclarationRule(),
+					Message: "Parameters of provider `b` are expected to be sorted as follows:" + `
+b = {
+  source  = "hashicorp/azurerm"
+  version = "~> 3.0.2"
+}`,
+				},
+				{
+					Rule: NewTerraformRequiredProvidersDeclarationRule(),
+					Message: "Parameters of provider `c` are expected to be sorted as follows:" + `
+c = {
+  source  = "hashicorp/azurerm"
+  version = "~> 3.0.2"
+}`,
+				},
+				{
+					Rule: NewTerraformRequiredProvidersDeclarationRule(),
+					Message: "Parameters of provider `d` are expected to be sorted as follows:" + `
+d = {
+  source  = "hashicorp/azurerm"
+  version = "~> 3.0.2"
+}`,
+				},
+				{
+					Rule: NewTerraformRequiredProvidersDeclarationRule(),
+					Message: "Parameters of provider `e` are expected to be sorted as follows:" + `
+e = {
   source  = "hashicorp/azurerm"
   version = "~> 3.0.2"
 }`,

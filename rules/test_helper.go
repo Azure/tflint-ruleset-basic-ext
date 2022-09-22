@@ -14,7 +14,7 @@ import (
 func AssertIssues(t *testing.T, expected helper.Issues, actual helper.Issues) {
 	opts := []cmp.Option{
 		// Range field will be ignored because it's not that important in tests such as positions
-		cmpopts.IgnoreTypes(hcl.Range{}),
+		cmpopts.IgnoreFields(hcl.Range{}),
 		messageComparer(),
 	}
 	if !cmp.Equal(expected, actual, opts...) {

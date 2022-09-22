@@ -47,7 +47,7 @@ func (r *TerraformRequiredProvidersDeclarationRule) CheckFile(runner tflint.Runn
 	for _, block := range blocks {
 		switch block.Type {
 		case "terraform":
-			if subErr := r.checkTerraformRequiredProvidersDeclaration(runner, block); subErr != nil {
+			if subErr := r.checkBlock(runner, block); subErr != nil {
 				err = multierror.Append(err, subErr)
 			}
 		}
@@ -55,7 +55,7 @@ func (r *TerraformRequiredProvidersDeclarationRule) CheckFile(runner tflint.Runn
 	return err
 }
 
-func (r *TerraformRequiredProvidersDeclarationRule) checkTerraformRequiredProvidersDeclaration(runner tflint.Runner, block *hclsyntax.Block) error {
+func (r *TerraformRequiredProvidersDeclarationRule) checkBlock(runner tflint.Runner, block *hclsyntax.Block) error {
 	isRequiredProvidersDeclared := false
 	var err error
 	for _, nestedBlock := range block.Body.Blocks {
@@ -75,21 +75,22 @@ func (r *TerraformRequiredProvidersDeclarationRule) checkTerraformRequiredProvid
 	)
 }
 
-func (r *TerraformRequiredProvidersDeclarationRule) checkRequiredProvidersArgOrder(runner tflint.Runner, block *hclsyntax.Block) error {
-	file, _ := runner.GetFile(block.Range().Filename)
+func (r *TerraformRequiredProvidersDeclarationRule) checkRequiredProvidersArgOrder(runner tflint.Runner, providerBlock *hclsyntax.Block) error {
+	file, _ := runner.GetFile(providerBlock.Range().Filename)
 	var providerNames []string
 	providerParamTxts := make(map[string]string)
 	providerParamIssues := helper.Issues{}
-	providers := block.Body.Attributes
-	for providerName, providerParam := range providers {
-		sortedMap, sorted := PrintSortedAttrTxt(file.Bytes, providerParam)
-		providerParamTxts[providerName] = sortedMap
-		providerNames = append(providerNames, providerName)
+	providers := providerBlock.Body.Attributes
+	for _, config := range attributesByLines(providers) {
+		sortedMap, sorted := PrintSortedAttrTxt(file.Bytes, config)
+		name := config.Name
+		providerParamTxts[name] = sortedMap
+		providerNames = append(providerNames, name)
 		if !sorted {
 			providerParamIssues = append(providerParamIssues, &helper.Issue{
 				Rule:    r,
-				Message: fmt.Sprintf("Parameters of provider `%s` are expected to be sorted as follows:\n%s", providerName, sortedMap),
-				Range:   providerParam.NameRange,
+				Message: fmt.Sprintf("Parameters of provider `%s` are expected to be sorted as follows:\n%s", name, sortedMap),
+				Range:   config.NameRange,
 			})
 		}
 	}
@@ -110,15 +111,15 @@ func (r *TerraformRequiredProvidersDeclarationRule) checkRequiredProvidersArgOrd
 		sortedProviderParamTxt := strings.Join(sortedProviderParamTxts, "\n")
 		var sortedRequiredProviderTxt string
 		if RemoveSpaceAndLine(sortedProviderParamTxt) == "" {
-			sortedRequiredProviderTxt = fmt.Sprintf("%s {}", block.Type)
+			sortedRequiredProviderTxt = fmt.Sprintf("%s {}", providerBlock.Type)
 		} else {
-			sortedRequiredProviderTxt = fmt.Sprintf("%s {\n%s\n}", block.Type, sortedProviderParamTxt)
+			sortedRequiredProviderTxt = fmt.Sprintf("%s {\n%s\n}", providerBlock.Type, sortedProviderParamTxt)
 		}
 		sortedRequiredProviderTxt = string(hclwrite.Format([]byte(sortedRequiredProviderTxt)))
 		return runner.EmitIssue(
 			r,
 			fmt.Sprintf("The arguments of `required_providers` are expected to be sorted as follows:\n%s", sortedRequiredProviderTxt),
-			block.DefRange(),
+			providerBlock.DefRange(),
 		)
 	}
 	var err error
