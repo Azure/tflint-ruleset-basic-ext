@@ -28,3 +28,6 @@ jobs:
       run: make build
     - name: Run tests
       run: make test
+    - name: Doc test
+      run: |
+        sh script/check_doc.sh
