@@ -51,30 +51,30 @@ func PrintSortedAttrTxt(src []byte, attr *hclsyntax.Attribute) (string, bool) {
 		return string(attr.Range().SliceBytes(src)), isSorted
 	}
 	var keys []string
-	itemTxts := make(map[string]string)
+	object := make(map[string]string)
 	for _, item := range exp.Items {
 		key := string(item.KeyExpr.Range().SliceBytes(src))
-		itemTxt := fmt.Sprintf("%s = %s", key, string(item.ValueExpr.Range().SliceBytes(src)))
+		value := fmt.Sprintf("%s = %s", key, string(item.ValueExpr.Range().SliceBytes(src)))
 		keys = append(keys, key)
-		itemTxts[key] = itemTxt
+		object[key] = value
 	}
 	isSorted = sort.StringsAreSorted(keys)
 	if !isSorted {
 		sort.Strings(keys)
 	}
-	var sortedItemTxts []string
+	var objectAttrs []string
 	for _, key := range keys {
-		sortedItemTxts = append(sortedItemTxts, itemTxts[key])
+		objectAttrs = append(objectAttrs, object[key])
 	}
-	sortedExpTxt := strings.Join(sortedItemTxts, "\n")
+	sortedExpTxt := strings.Join(objectAttrs, "\n")
 	var sortedAttrTxt string
 	if RemoveSpaceAndLine(sortedExpTxt) == "" {
 		sortedAttrTxt = fmt.Sprintf("%s = {}", attr.Name)
 	} else {
 		sortedAttrTxt = fmt.Sprintf("%s = {\n%s\n}", attr.Name, sortedExpTxt)
 	}
-	sortedAttrTxt = string(hclwrite.Format([]byte(sortedAttrTxt)))
-	return sortedAttrTxt, isSorted
+	formattedTxt := string(hclwrite.Format([]byte(sortedAttrTxt)))
+	return formattedTxt, isSorted
 }
 
 // RemoveSpaceAndLine remove space, "\t" and "\n" from the given string

@@ -82,22 +82,24 @@ func (r *TerraformRequiredProvidersDeclarationRule) checkRequiredProvidersArgOrd
 	providerParamIssues := helper.Issues{}
 	providers := block.Body.Attributes
 	for providerName, providerParam := range providers {
-		sortedProviderParamTxt, isProviderParamSorted := PrintSortedAttrTxt(file.Bytes, providerParam)
-		providerParamTxts[providerName] = sortedProviderParamTxt
+		sortedMap, sorted := PrintSortedAttrTxt(file.Bytes, providerParam)
+		providerParamTxts[providerName] = sortedMap
 		providerNames = append(providerNames, providerName)
-		if !isProviderParamSorted {
+		if !sorted {
 			providerParamIssues = append(providerParamIssues, &helper.Issue{
 				Rule:    r,
-				Message: fmt.Sprintf("Parameters of provider `%s` are expected to be sorted as follows:\n%s", providerName, sortedProviderParamTxt),
+				Message: fmt.Sprintf("Parameters of provider `%s` are expected to be sorted as follows:\n%s", providerName, sortedMap),
 				Range:   providerParam.NameRange,
 			})
 		}
 	}
-	sort.Slice(providerNames, func(i, j int) bool {
-		if providers[providerNames[i]].Range().Start.Line == providers[providerNames[j]].Range().Start.Line {
-			return providers[providerNames[i]].Range().Start.Column < providers[providerNames[j]].Range().Start.Column
+	sort.Slice(providerNames, func(x, y int) bool {
+		providerX := providers[providerNames[x]]
+		providerY := providers[providerNames[y]]
+		if providerX.Range().Start.Line == providerY.Range().Start.Line {
+			return providerX.Range().Start.Column < providerY.Range().Start.Column
 		}
-		return providers[providerNames[i]].Range().Start.Line < providers[providerNames[j]].Range().Start.Line
+		return providerX.Range().Start.Line < providerY.Range().Start.Line
 	})
 	if !sort.StringsAreSorted(providerNames) {
 		sort.Strings(providerNames)

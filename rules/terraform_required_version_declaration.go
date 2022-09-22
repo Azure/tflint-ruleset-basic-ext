@@ -40,47 +40,47 @@ func (r *TerraformRequiredVersionDeclarationRule) CheckFile(runner tflint.Runner
 	var err error
 	blocks := file.Body.(*hclsyntax.Body).Blocks
 	for _, block := range blocks {
-		switch block.Type {
-		case "terraform":
-			if subErr := r.checkTerraformRequiredVersionDeclaration(runner, block); subErr != nil {
-				err = multierror.Append(err, subErr)
-			}
+		if block.Type != "terraform" {
+			continue
+		}
+		if subErr := r.checkBlock(runner, block); subErr != nil {
+			err = multierror.Append(err, subErr)
 		}
 	}
 	return err
 }
 
-func (r *TerraformRequiredVersionDeclarationRule) checkTerraformRequiredVersionDeclaration(runner tflint.Runner, block *hclsyntax.Block) error {
-	comparePos := func(pos1 hcl.Pos, pos2 hcl.Pos) bool {
-		if pos1.Line != pos2.Line {
-			return pos1.Line < pos2.Line
-		}
-		return pos1.Line < pos2.Line
-	}
+func (r *TerraformRequiredVersionDeclarationRule) checkBlock(runner tflint.Runner, block *hclsyntax.Block) error {
 	msg := "The `required_version` field should be declared at the beginning of `terraform` block"
-	requiredVersionAttr, requiredVersionDefined := block.Body.Attributes["required_version"]
-	if !requiredVersionDefined {
+	versionAttr, defined := block.Body.Attributes["required_version"]
+	if !defined {
 		return runner.EmitIssue(
 			r,
 			msg,
 			block.DefRange(),
 		)
 	}
+	comparePos := func(pos1 hcl.Pos, pos2 hcl.Pos) bool {
+		if pos1.Line != pos2.Line {
+			return pos1.Line < pos2.Line
+		}
+		return pos1.Column < pos2.Column
+	}
 	for _, attr := range block.Body.Attributes {
-		if attr.Name != "required_version" && comparePos(attr.Range().Start, requiredVersionAttr.Range().Start) {
+		if attr.Name != "required_version" && comparePos(attr.Range().Start, versionAttr.Range().Start) {
 			return runner.EmitIssue(
 				r,
 				msg,
-				requiredVersionAttr.NameRange,
+				versionAttr.NameRange,
 			)
 		}
 	}
 	for _, nestedBlock := range block.Body.Blocks {
-		if comparePos(nestedBlock.Range().Start, requiredVersionAttr.Range().Start) {
+		if comparePos(nestedBlock.Range().Start, versionAttr.Range().Start) {
 			return runner.EmitIssue(
 				r,
 				msg,
-				requiredVersionAttr.NameRange,
+				versionAttr.NameRange,
 			)
 		}
 	}

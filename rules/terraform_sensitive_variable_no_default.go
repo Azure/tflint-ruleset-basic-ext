@@ -47,18 +47,18 @@ func (r *TerraformSensitiveVariableNoDefaultRule) CheckFile(runner tflint.Runner
 			continue
 		}
 		sensitive := false
-		if sensitiveAttr, isSensitiveSet := block.Body.Attributes["sensitive"]; isSensitiveSet {
-			val, diags := sensitiveAttr.Expr.Value(nil)
+		if attr, sensitiveSet := block.Body.Attributes["sensitive"]; sensitiveSet {
+			val, diags := attr.Expr.Value(nil)
 			if diags.HasErrors() {
 				err = multierror.Append(err, diags)
 			}
 			sensitive = val.True()
 		}
-		if defaultAttr, isDefaultSet := block.Body.Attributes["default"]; sensitive && isDefaultSet {
+		if attr, defaultSet := block.Body.Attributes["default"]; sensitive && defaultSet {
 			subErr := runner.EmitIssue(
 				r,
 				fmt.Sprintf("Default value is not expected to be set for sensitive variable `%s`", block.Labels[0]),
-				defaultAttr.NameRange,
+				attr.NameRange,
 			)
 			if subErr != nil {
 				err = multierror.Append(err, subErr)
