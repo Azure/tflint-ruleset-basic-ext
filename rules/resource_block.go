@@ -41,6 +41,9 @@ func (b *ResourceBlock) CheckBlock() error {
 	if !b.CheckOrder() {
 		return b.emit(b)
 	}
+	if b.NestedBlocks == nil {
+		return nil
+	}
 	for _, nb := range b.NestedBlocks.Blocks {
 		if err := nb.CheckBlock(); err != nil {
 			return err

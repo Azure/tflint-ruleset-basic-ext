@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 
 	"github.com/terraform-linters/tflint-plugin-sdk/helper"
@@ -413,6 +414,19 @@ data "azurerm_resources" "example" {
 				},
 			},
 		},
+		{
+			Name: "correct arguments only resource",
+			Content: `
+resource "azurerm_virtual_network" "vnet" {
+  name                = "myTFVnet"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.rg.name
+  dns_name_label      = "aci-label"
+  os_type             = "Linux"
+}`,
+			Expected: helper.Issues{},
+		},
 	}
 
 	rule := NewTerraformResourceDataArgLayoutRule()
@@ -426,4 +440,63 @@ data "azurerm_resources" "example" {
 			AssertIssuesWithoutRange(t, tc.Expected, runner.Issues)
 		})
 	}
+}
+
+func Test_TerraformResourceDataArgLayout_DoNotCareNormalArgOrder(t *testing.T) {
+	code := `
+resource "azurerm_virtual_network" "vnet" {
+  provider = azurerm.europe
+  for_each = local.subnet_ids
+
+  name                = "myTFVnet"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.rg.name
+  dns_name_label      = "aci-label"
+  os_type             = "Linux"
+  tags = {
+    Name = "VM network ${each.key}"
+  }
+}`
+
+	rule := NewTerraformResourceDataArgLayoutRule()
+	runner := helper.TestRunner(t, map[string]string{"config.tf": code})
+	if err := rule.Check(runner); err != nil {
+		t.Fatalf("Unexpected error occurred: %s", err)
+	}
+	assert.Empty(t, runner.Issues)
+}
+
+func Test_TerraformResourceDataArgLayout_DoNotCareNormalNestedBlockOrder(t *testing.T) {
+	code := `
+resource "azurerm_virtual_network" "vnet" {
+  provider = azurerm.europe
+  for_each = local.subnet_ids
+
+  name                = "myTFVnet"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.rg.name
+  dns_name_label      = "aci-label"
+  os_type             = "Linux"
+  tags = {
+    Name = "VM network ${each.key}"
+  }
+
+  subnet {
+	name 		   = "testsubnet"
+    address_prefix = "192.168.0.0/24"
+  }
+  ddos_protection_plan {
+	id      = azurerm_network_ddos_protection_plan.test.id
+	enabled = true
+  }
+}`
+
+	rule := NewTerraformResourceDataArgLayoutRule()
+	runner := helper.TestRunner(t, map[string]string{"config.tf": code})
+	if err := rule.Check(runner); err != nil {
+		t.Fatalf("Unexpected error occurred: %s", err)
+	}
+	assert.Empty(t, runner.Issues)
 }

@@ -83,16 +83,6 @@ type NestedBlocks struct {
 
 // CheckOrder checks whether this type of nestedBlocks are sorted
 func (b *NestedBlocks) CheckOrder() bool {
-	if b == nil {
-		return true
-	}
-	var sortField *string
-	for _, nb := range b.Blocks {
-		if sortField != nil && *sortField > nb.SortField {
-			return false
-		}
-		sortField = &nb.SortField
-	}
 	return true
 }
 
