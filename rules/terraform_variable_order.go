@@ -61,49 +61,78 @@ func (r *TerraformVariableOrderRule) Check(runner tflint.Runner) error {
 
 func (r *TerraformVariableOrderRule) checkVariableOrder(runner tflint.Runner, file *hcl.File) error {
 	blocks := file.Body.(*hclsyntax.Body).Blocks
-	sortedVariableNames := r.getSortedVariableNames(blocks, false)
-	sortedVariableNames = append(sortedVariableNames, r.getSortedVariableNames(blocks, true)...)
 
-	var variableNames []string
-	var firstVarBlockRange *hcl.Range
-	variableHclTxts := make(map[string]string)
-	for _, block := range blocks {
-		switch block.Type {
-		case "variable":
-			if firstVarBlockRange == nil {
-				firstVarBlockRange = ref(block.DefRange())
-			}
-			variableName := block.Labels[0]
-			variableNames = append(variableNames, variableName)
-			variableHclTxts[variableName] = string(block.Range().SliceBytes(file.Bytes))
-		}
-	}
+	requiredVars := r.getSortedVariableNames(blocks, false)
+	optionalVars := r.getSortedVariableNames(blocks, true)
+	sortedVariableNames := append(requiredVars, optionalVars...)
 
+	variableNames := r.getVariableNames(blocks)
 	if reflect.DeepEqual(variableNames, sortedVariableNames) {
 		return nil
 	}
-	var sortedVariableHclTxts []string
-	for _, variableName := range sortedVariableNames {
-		sortedVariableHclTxts = append(sortedVariableHclTxts, variableHclTxts[variableName])
-	}
+
+	firstRange := r.firstVariableRange(blocks)
+	sortedVariableHclTxts := r.sortedVariableCodeTxts(blocks, file, sortedVariableNames)
 	sortedVariableHclBytes := hclwrite.Format([]byte(strings.Join(sortedVariableHclTxts, "\n\n")))
+
 	return runner.EmitIssue(
 		r,
 		fmt.Sprintf("Recommended variable order:\n%s", sortedVariableHclBytes),
-		*firstVarBlockRange,
+		*firstRange,
 	)
 }
 
-func (r *TerraformVariableOrderRule) getSortedVariableNames(blocks hclsyntax.Blocks, hasDefaultVal bool) []string {
-	var sortedVariableNames []string
-	for _, block := range blocks {
-		switch block.Type {
-		case "variable":
-			if _, variableHasDefaultVal := block.Body.Attributes["default"]; variableHasDefaultVal == hasDefaultVal {
-				sortedVariableNames = append(sortedVariableNames, block.Labels[0])
-			}
-		}
+func (r *TerraformVariableOrderRule) sortedVariableCodeTxts(blocks hclsyntax.Blocks, file *hcl.File, sortedVariableNames []string) []string {
+	variableHclTxts := r.variableCodeTxts(blocks, file)
+	var sortedVariableHclTxts []string
+	for _, name := range sortedVariableNames {
+		sortedVariableHclTxts = append(sortedVariableHclTxts, variableHclTxts[name])
 	}
+	return sortedVariableHclTxts
+}
+
+func (r *TerraformVariableOrderRule) variableCodeTxts(blocks hclsyntax.Blocks, file *hcl.File) map[string]string {
+	variableHclTxts := make(map[string]string)
+	r.forVariables(blocks, func(v *hclsyntax.Block) {
+		name := v.Labels[0]
+		variableHclTxts[name] = string(v.Range().SliceBytes(file.Bytes))
+	})
+	return variableHclTxts
+}
+
+func (r *TerraformVariableOrderRule) firstVariableRange(blocks hclsyntax.Blocks) *hcl.Range {
+	var firstRange *hcl.Range
+	r.forVariables(blocks, func(v *hclsyntax.Block) {
+		if firstRange == nil {
+			firstRange = ref(v.DefRange())
+		}
+	})
+	return firstRange
+}
+
+func (r *TerraformVariableOrderRule) getVariableNames(blocks hclsyntax.Blocks) []string {
+	var variableNames []string
+	r.forVariables(blocks, func(v *hclsyntax.Block) {
+		variableNames = append(variableNames, v.Labels[0])
+	})
+	return variableNames
+}
+
+func (r *TerraformVariableOrderRule) getSortedVariableNames(blocks hclsyntax.Blocks, defaultWanted bool) []string {
+	var sortedVariableNames []string
+	r.forVariables(blocks, func(v *hclsyntax.Block) {
+		if _, hasDefault := v.Body.Attributes["default"]; hasDefault == defaultWanted {
+			sortedVariableNames = append(sortedVariableNames, v.Labels[0])
+		}
+	})
 	sort.Strings(sortedVariableNames)
 	return sortedVariableNames
+}
+
+func (r *TerraformVariableOrderRule) forVariables(blocks hclsyntax.Blocks, action func(v *hclsyntax.Block)) {
+	for _, block := range blocks {
+		if block.Type == "variable" {
+			action(block)
+		}
+	}
 }
