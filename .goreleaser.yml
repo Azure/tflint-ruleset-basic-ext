@@ -2,8 +2,6 @@
 # Make sure to check the documentation at http://goreleaser.com
 env:
   - CGO_ENABLED=0
-  - REPO_OWNER={{ .Env.REPO_OWNER }}
-  - REPO_NAME={{ .Env.REPO_NAME }}
 builds:
   - targets:
       - darwin_amd64
@@ -24,6 +22,8 @@ changelog:
   skip: true
 checksum:
   name_template: 'checksums.txt'
+signs:
+  - artifacts: checksum
 release:
   github:
     owner: Azure
