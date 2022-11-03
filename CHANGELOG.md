@@ -14,3 +14,7 @@ Fix a nil panic and incorrect check on nested block
 ## v0.1.1
 
 Fix incorrect reference link
+
+## V0.2.0
+
+Fix install code, add CodeQL and Gosec to ci.
