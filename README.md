@@ -1,5 +1,10 @@
 # TFLint Ruleset for terraform-provider-basic-ext
 
+![test](https://img.shields.io/github/workflow/status/Azure/tflint-ruleset-basic-ext/build?label=build)
+![lint](https://img.shields.io/github/workflow/status/Azure/tflint-ruleset-basic-ext/lint?label=lint)
+![e2e](https://img.shields.io/github/workflow/status/Azure/tflint-ruleset-basic-ext/e2e?label=e2e)
+
+
 TFLint ruleset extension plugin for common terraform code syntax check
 
 ## Requirements
