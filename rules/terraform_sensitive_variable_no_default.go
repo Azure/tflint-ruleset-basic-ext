@@ -54,7 +54,7 @@ func (r *TerraformSensitiveVariableNoDefaultRule) CheckFile(runner tflint.Runner
 			}
 			sensitive = val.True()
 		}
-		if sensitive && withNonNullDefaultValue(block, file) {
+		if sensitive && withNonNullDefaultValue(block) {
 			subErr := runner.EmitIssue(
 				r,
 				fmt.Sprintf("Default value is not expected to be set for sensitive variable `%s`", block.Labels[0]),
@@ -68,7 +68,7 @@ func (r *TerraformSensitiveVariableNoDefaultRule) CheckFile(runner tflint.Runner
 	return err
 }
 
-func withNonNullDefaultValue(b *hclsyntax.Block, f *hcl.File) bool {
+func withNonNullDefaultValue(b *hclsyntax.Block) bool {
 	attr, set := b.Body.Attributes["default"]
 	if !set {
 		return false
