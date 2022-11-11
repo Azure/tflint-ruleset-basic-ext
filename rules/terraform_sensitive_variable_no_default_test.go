@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"github.com/stretchr/testify/assert"
 	"github.com/terraform-linters/tflint-plugin-sdk/helper"
 	"testing"
 )
@@ -91,4 +92,20 @@ variable "availability_zone_tag" {
 			AssertIssues(t, tc.Expected, runner.Issues)
 		})
 	}
+}
+
+func Test_TerraformSensitiveVariableNoDefaultValue_NullDefaultValueShouldNotRaiseError(t *testing.T) {
+	filename := "config.tf"
+	code := `variable "password" {
+  type      = string
+  default   = null
+  sensitive = true
+}`
+	runner := helper.TestRunner(t, map[string]string{filename: code})
+	sut := NewTerraformSensitiveVariableNoDefaultRule()
+	if err := sut.Check(runner); err != nil {
+		t.Fatalf("Unexpected error occurred: %s", err)
+	}
+
+	assert.Equal(t, 0, len(runner.Issues))
 }

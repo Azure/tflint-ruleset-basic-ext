@@ -18,3 +18,7 @@ Fix incorrect reference link
 ## V0.2.0
 
 Fix install code, add CodeQL and Gosec to ci.
+
+## v0.2.1
+
+`terraform_sensitive_variable_no_default` won't raise error when the default value is `null`.
