@@ -16,6 +16,7 @@ var Rules = []tflint.Rule{
 	NewTerraformRequiredVersionDeclarationRule(),
 	NewTerraformResourceDataArgLayoutRule(),
 	NewTerraformSensitiveVariableNoDefaultRule(),
+	NewTerraformVariableNullableFalseRule(),
 	NewTerraformVariableOrderRule(),
 	NewTerraformVariableSeparateRule(),
 	NewTerraformVersionsFileRule(),
