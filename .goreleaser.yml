@@ -21,12 +21,12 @@ archives:
 changelog:
   skip: true
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
 signs:
   - artifacts: checksum
 release:
   github:
-    owner: Azure
+    owner: henworth
     name: tflint-ruleset-basic-ext
 snapshot:
   name_template: "{{ .Tag }}-dev"
