@@ -1,8 +1,9 @@
 package rules
 
 import (
-	"github.com/terraform-linters/tflint-plugin-sdk/helper"
 	"testing"
+
+	"github.com/terraform-linters/tflint-plugin-sdk/helper"
 )
 
 func Test_TerraformHeredocUsageRule(t *testing.T) {
@@ -149,7 +150,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: 1.18
+        go-version: 1.20
     - name: Import GPG key
       id: import_gpg
       uses: crazy-max/ghaction-import-gpg@v4

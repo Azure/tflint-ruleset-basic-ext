@@ -10,7 +10,7 @@ TFLint ruleset extension plugin for common terraform code syntax check
 ## Requirements
 
 - TFLint v0.35+
-- Go v1.18
+- Go v1.20
 
 ## Building the plugin
 
