@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/Azure/tflint-ruleset-basic-ext/project"
+	"github.com/Azure/tflint-ruleset-basic-ext/rules"
 	"github.com/terraform-linters/tflint-plugin-sdk/plugin"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
-	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
-	"github.com/terraform-linters/tflint-ruleset-basic-ext/rules"
 )
 
 func main() {

@@ -5,12 +5,12 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/Azure/tflint-ruleset-basic-ext/project"
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
-	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 )
 
 // TerraformLocalsOrderRule checks whether comments use the preferred syntax
