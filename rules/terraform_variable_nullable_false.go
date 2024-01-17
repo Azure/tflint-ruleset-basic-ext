@@ -1,10 +1,10 @@
 package rules
 
 import (
+	"github.com/Azure/tflint-ruleset-basic-ext/project"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/terraform-linters/tflint-plugin-sdk/hclext"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
-	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 )
 
 var _ tflint.Rule = &TerraformVariableNullableFalseRule{}

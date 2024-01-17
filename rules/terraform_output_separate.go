@@ -1,11 +1,11 @@
 package rules
 
 import (
+	"github.com/Azure/tflint-ruleset-basic-ext/project"
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
-	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 )
 
 // TerraformOutputSeparateRule checks whether the outputs are separated from other types of blocks

@@ -84,7 +84,7 @@ resource "azurerm_container_group" "example" {
   on main.tf line 1:
    1: resource "azurerm_container_group" "example" {
 
-Reference: https://github.com/terraform-linters/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_resource_data_arg_layout.md
+Reference: https://github.com/Azure/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_resource_data_arg_layout.md
 ```
 
 ## Why
