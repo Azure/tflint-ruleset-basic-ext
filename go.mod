@@ -1,4 +1,4 @@
-module github.com/terraform-linters/tflint-ruleset-basic-ext
+module github.com/Azure/tflint-ruleset-basic-ext
 
 go 1.18
 
