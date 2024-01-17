@@ -47,7 +47,7 @@ Notice: for JSON, instead of HEREDOC, use a combination of a `local` and the `js
    2:   value = <<-JSON
    3: {
 
-Reference: https:///blob/v0.0.1/docs/rules/terraform_heredoc_usage.md
+Reference: https://github.com/Azure/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_heredoc_usage.md
 ```
 
 ## Why

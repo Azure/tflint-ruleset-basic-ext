@@ -25,7 +25,7 @@ locals {
   on main.tf line 1:
    1: locals {
 
-Reference: https:///blob/v0.0.1/docs/rules/terraform_locals_order.md
+Reference: https://github.com/Azure/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_locals_order.md
 ```
 
 ## Why

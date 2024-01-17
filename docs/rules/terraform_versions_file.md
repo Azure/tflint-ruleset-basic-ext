@@ -32,7 +32,7 @@ Notice: `versions.tf` should have and only have 1 `terraform` block (terraform_v
   on  line 0:
    (source code not available)
 
-Reference: https:///blob/v0.0.1/docs/rules/terraform_versions_file.md
+Reference: https://github.com/Azure/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_versions_file.md
 ```
 
 ## Why

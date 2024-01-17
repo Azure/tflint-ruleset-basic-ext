@@ -41,7 +41,7 @@ Notice: Putting variables and other types of blocks in the same file is not reco
   on main.tf line 1:
    1: terraform{}
 
-Reference: https:///blob/v0.0.1/docs/rules/terraform_variable_separate.md
+Reference: https://github.com/Azure/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_variable_separate.md
 
 ```
 

@@ -57,7 +57,7 @@ output "instance_ip_addr" {
   on main.tf line 1:
    1: output "instance_ip_addr" {
 
-Reference: https:///blob/v0.0.1/docs/rules/terraform_output_order.md
+Reference: https://github.com/Azure/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_output_order.md
 ```
 
 ## Why

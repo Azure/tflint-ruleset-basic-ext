@@ -38,7 +38,7 @@ Notice: Putting outputs and other types of block in the same file is not recomme
   on main.tf line 1:
    1: terraform{}
 
-Reference: https:///blob/v0.0.1/docs/rules/terraform_output_separate.md
+Reference: https://github.com/Azure/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_output_separate.md
 ```
 
 ## Why

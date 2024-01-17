@@ -24,7 +24,7 @@ Notice: `nullable` is default to `true` so we don't need to declare it explicitl
   on main.tf line 3:
   3:   nullable = true
 
-Reference: https:///blob/v0.0.1/docs/rules/terraform_variable_nullable_false.md
+Reference: https://github.com/Azure/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_variable_nullable_false.md
 ```
 
 ## Why

@@ -25,7 +25,7 @@ Notice: The `required_version` field should be declared at the beginning of `ter
   on main.tf line 8:
    8:   required_version = "~> 0.12.29"
 
-Reference: https:///blob/v0.0.1/docs/rules/terraform_required_version_declaration.md
+Reference: https://github.com/Azure/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_required_version_declaration.md
 ```
 
 ## Why
