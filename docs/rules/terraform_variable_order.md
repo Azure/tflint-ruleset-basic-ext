@@ -64,7 +64,7 @@ variable "docker_ports" {
   on main.tf line 1:
    1: variable "image_id" {
 
-Reference: https://github.com/terraform-linters/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_variable_order.md
+Reference: https:///blob/v0.0.1/docs/rules/terraform_variable_order.md
 ```
 
 ## Why

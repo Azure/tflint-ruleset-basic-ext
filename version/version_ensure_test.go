@@ -6,9 +6,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/Azure/tflint-ruleset-basic-ext/project"
 	"github.com/google/go-github/v47/github"
 	"github.com/stretchr/testify/assert"
-	"github.com/terraform-linters/tflint-ruleset-basic-ext/project"
 	"golang.org/x/mod/semver"
 	"golang.org/x/oauth2"
 )

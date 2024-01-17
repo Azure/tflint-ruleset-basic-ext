@@ -20,7 +20,7 @@ Warning: Provider block in terraform module is expected to have and only have `a
   on main.tf line 1:
    1: provider "azurerm" {
 
-Reference: https://github.com/terraform-linters/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_module_provider_declaration.md
+Reference: https:///blob/v0.0.1/docs/rules/terraform_module_provider_declaration.md
 ```
 
 ## Why

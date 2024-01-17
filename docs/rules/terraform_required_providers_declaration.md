@@ -39,7 +39,7 @@ required_providers {
   on versions.tf line 3:
    3:   required_providers {
 
-Reference: https://github.com/terraform-linters/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_required_providers_declaration.md
+Reference: https:///blob/v0.0.1/docs/rules/terraform_required_providers_declaration.md
 ```
 
 ## Why

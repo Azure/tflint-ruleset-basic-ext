@@ -21,7 +21,7 @@ Warning: Default value is not expected to be set for sensitive variable `availab
   on main.tf line 3:
    3:   default   = ["us-west-1a"]
 
-Reference: https://github.com/terraform-linters/tflint-ruleset-basic-ext/blob/v0.0.1/docs/rules/terraform_sensitive_variable_no_default.md
+Reference: https:///blob/v0.0.1/docs/rules/terraform_sensitive_variable_no_default.md
 
 ```
 
