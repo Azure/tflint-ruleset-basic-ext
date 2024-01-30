@@ -2,6 +2,7 @@ package rules
 
 import (
 	"fmt"
+	"github.com/terraform-linters/tflint-plugin-sdk/logger"
 	"reflect"
 	"sort"
 	"strings"
@@ -46,7 +47,6 @@ func (r *TerraformVariableOrderRule) Link() string {
 
 // Check checks whether the variables are sorted in expected order
 func (r *TerraformVariableOrderRule) Check(runner tflint.Runner) error {
-
 	files, err := runner.GetFiles()
 	if err != nil {
 		return err
@@ -60,7 +60,12 @@ func (r *TerraformVariableOrderRule) Check(runner tflint.Runner) error {
 }
 
 func (r *TerraformVariableOrderRule) checkVariableOrder(runner tflint.Runner, file *hcl.File) error {
-	blocks := file.Body.(*hclsyntax.Body).Blocks
+	body, ok := file.Body.(*hclsyntax.Body)
+	if !ok {
+		logger.Debug("skip terraform_variable_order check since it's not hcl file")
+		return nil
+	}
+	blocks := body.Blocks
 
 	requiredVars := r.getSortedVariableNames(blocks, false)
 	optionalVars := r.getSortedVariableNames(blocks, true)

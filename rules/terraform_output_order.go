@@ -2,6 +2,7 @@ package rules
 
 import (
 	"fmt"
+	"github.com/terraform-linters/tflint-plugin-sdk/logger"
 	"sort"
 	"strings"
 
@@ -58,7 +59,12 @@ func (r *TerraformOutputOrderRule) Check(runner tflint.Runner) error {
 }
 
 func (r *TerraformOutputOrderRule) checkOutputOrder(runner tflint.Runner, file *hcl.File) error {
-	blocks := file.Body.(*hclsyntax.Body).Blocks
+	body, ok := file.Body.(*hclsyntax.Body)
+	if !ok {
+		logger.Debug("skip terraform_output_order check since it's not hcl file")
+		return nil
+	}
+	blocks := body.Blocks
 	firstOutputBlockRange := r.firstOutputRange(blocks)
 	if firstOutputBlockRange == nil {
 		return nil

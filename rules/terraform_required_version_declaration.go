@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/terraform-linters/tflint-plugin-sdk/logger"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
 
@@ -38,7 +39,12 @@ func (r *TerraformRequiredVersionDeclarationRule) Name() string {
 
 func (r *TerraformRequiredVersionDeclarationRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	var err error
-	blocks := file.Body.(*hclsyntax.Body).Blocks
+	body, ok := file.Body.(*hclsyntax.Body)
+	if !ok {
+		logger.Debug("skip terraform_required_version_declaration check since it's not hcl file")
+		return nil
+	}
+	blocks := body.Blocks
 	for _, block := range blocks {
 		if block.Type != "terraform" {
 			continue

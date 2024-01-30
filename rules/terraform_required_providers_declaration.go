@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/terraform-linters/tflint-plugin-sdk/helper"
+	"github.com/terraform-linters/tflint-plugin-sdk/logger"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 	"sort"
 	"strings"
@@ -43,7 +44,12 @@ func (r *TerraformRequiredProvidersDeclarationRule) Name() string {
 
 func (r *TerraformRequiredProvidersDeclarationRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
 	var err error
-	blocks := file.Body.(*hclsyntax.Body).Blocks
+	body, ok := file.Body.(*hclsyntax.Body)
+	if !ok {
+		logger.Debug("skip terraform_required_providers_declaration check since it's not hcl file")
+		return nil
+	}
+	blocks := body.Blocks
 	for _, block := range blocks {
 		switch block.Type {
 		case "terraform":

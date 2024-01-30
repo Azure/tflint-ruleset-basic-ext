@@ -3,6 +3,7 @@ package rules
 import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/terraform-linters/tflint-plugin-sdk/logger"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
 
@@ -36,7 +37,11 @@ func (r *TerraformVersionsFileRule) Name() string {
 }
 
 func (r *TerraformVersionsFileRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
-	body := file.Body.(*hclsyntax.Body)
+	body, ok := file.Body.(*hclsyntax.Body)
+	if !ok {
+		logger.Debug("skip terraform_versions_file check since it's not hcl file")
+		return nil
+	}
 	filename := body.Range().Filename
 	if filename != "versions.tf" {
 		return nil

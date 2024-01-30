@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/terraform-linters/tflint-plugin-sdk/logger"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
 
@@ -38,7 +39,12 @@ func (r *TerraformModuleProviderDeclarationRule) Severity() tflint.Severity {
 }
 
 func (r *TerraformModuleProviderDeclarationRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
-	blocks := file.Body.(*hclsyntax.Body).Blocks
+	body, ok := file.Body.(*hclsyntax.Body)
+	if !ok {
+		logger.Debug("skip terraform_module_provider_declaration since it's not hcl file")
+		return nil
+	}
+	blocks := body.Blocks
 	var err error
 	for _, block := range blocks {
 		switch block.Type {

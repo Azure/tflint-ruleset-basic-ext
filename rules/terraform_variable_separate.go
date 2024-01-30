@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/terraform-linters/tflint-plugin-sdk/logger"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
 
@@ -40,7 +41,6 @@ func (r *TerraformVariableSeparateRule) Link() string {
 
 // Check checks whether the variables are separated from other types of blocks
 func (r *TerraformVariableSeparateRule) Check(runner tflint.Runner) error {
-
 	files, err := runner.GetFiles()
 	if err != nil {
 		return err
@@ -54,8 +54,12 @@ func (r *TerraformVariableSeparateRule) Check(runner tflint.Runner) error {
 }
 
 func (r *TerraformVariableSeparateRule) checkVariableSeparate(runner tflint.Runner, file *hcl.File) error {
-
-	blocks := file.Body.(*hclsyntax.Body).Blocks
+	body, ok := file.Body.(*hclsyntax.Body)
+	if !ok {
+		logger.Debug("skip terraform_variable_separate check since it's not hcl file")
+		return nil
+	}
+	blocks := body.Blocks
 
 	var firstNonVarBlockRange *hcl.Range
 	variableDefined := false

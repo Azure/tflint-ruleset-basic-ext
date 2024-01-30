@@ -2,6 +2,7 @@ package rules
 
 import (
 	"fmt"
+	"github.com/terraform-linters/tflint-plugin-sdk/logger"
 
 	"github.com/Azure/tflint-ruleset-basic-ext/project"
 	"github.com/hashicorp/go-multierror"
@@ -55,7 +56,11 @@ func (r *TerraformResourceDataArgLayoutRule) Check(runner tflint.Runner) error {
 }
 
 func (r *TerraformResourceDataArgLayoutRule) visitFile(runner tflint.Runner, file *hcl.File) error {
-	body := file.Body.(*hclsyntax.Body)
+	body, ok := file.Body.(*hclsyntax.Body)
+	if !ok {
+		logger.Debug("skip terraform_resource_data_arg_layout check since it's not hcl file")
+		return nil
+	}
 	if body == nil {
 		return nil
 	}

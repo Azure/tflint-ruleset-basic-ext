@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/terraform-linters/tflint-plugin-sdk/logger"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 	"gopkg.in/yaml.v3"
 	"strings"
@@ -41,7 +42,12 @@ func (r *TerraformHeredocUsageRule) Name() string {
 }
 
 func (r *TerraformHeredocUsageRule) CheckFile(runner tflint.Runner, file *hcl.File) error {
-	fileName := file.Body.(*hclsyntax.Body).Range().Filename
+	body, ok := file.Body.(*hclsyntax.Body)
+	if !ok {
+		logger.Debug("skip terraform_heredoc_usage since it's not hcl file")
+		return nil
+	}
+	fileName := body.Range().Filename
 	tokens, diags := hclsyntax.LexConfig(file.Bytes, fileName, hcl.InitialPos)
 	if diags.HasErrors() {
 		return diags
