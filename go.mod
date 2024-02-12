@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.19.1
 	github.com/stretchr/testify v1.8.4
 	github.com/terraform-linters/tflint-plugin-sdk v0.18.0
-	golang.org/x/mod v0.14.0
+	golang.org/x/mod v0.15.0
 	golang.org/x/oauth2 v0.16.0
 	gopkg.in/yaml.v3 v3.0.1
 )
