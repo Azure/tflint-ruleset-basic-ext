@@ -1,10 +1,10 @@
 default: build
 
 test:
-	go test $$(go list ./... | grep -v integration)
+	go mod download && go test ./...
 
-e2e:
-	cd integration && go test && cd ../
+e2e: install
+	cd integration && tflint --chdir=.
 
 build:
 	go build
