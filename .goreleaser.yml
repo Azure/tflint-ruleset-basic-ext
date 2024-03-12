@@ -26,7 +26,7 @@ signs:
   - artifacts: checksum
 release:
   github:
-    owner: lonegunmanb
+    owner: Azure
     name: tflint-ruleset-basic-ext
 snapshot:
   name_template: "{{ .Tag }}-dev"
