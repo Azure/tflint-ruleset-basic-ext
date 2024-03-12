@@ -7,7 +7,10 @@ import (
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
 
+var version = "0.6.0"
+
 func main() {
+	project.Version = version
 	plugin.Serve(&plugin.ServeOpts{
 		RuleSet: &tflint.BuiltinRuleSet{
 			Name:    "basic-ext",
