@@ -3,6 +3,7 @@ package rules
 import (
 	"fmt"
 	"github.com/terraform-linters/tflint-plugin-sdk/logger"
+	"github.com/zclconf/go-cty/cty"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
@@ -60,7 +61,14 @@ func (r *TerraformSensitiveVariableNoDefaultRule) CheckFile(runner tflint.Runner
 			}
 			sensitive = val.True()
 		}
-		if sensitive && withNonNullDefaultValue(block) {
+		if !sensitive {
+			continue
+		}
+		nullOrEmpty, err := nullOrZeroDefaultValue(block)
+		if err != nil {
+			return nil
+		}
+		if !nullOrEmpty {
 			subErr := runner.EmitIssue(
 				r,
 				fmt.Sprintf("Default value is not expected to be set for sensitive variable `%s`", block.Labels[0]),
@@ -74,11 +82,15 @@ func (r *TerraformSensitiveVariableNoDefaultRule) CheckFile(runner tflint.Runner
 	return err
 }
 
-func withNonNullDefaultValue(b *hclsyntax.Block) bool {
+func nullOrZeroDefaultValue(b *hclsyntax.Block) (bool, error) {
 	attr, set := b.Body.Attributes["default"]
 	if !set {
-		return false
+		return true, nil
 	}
-	value := hcl.ExprAsKeyword(attr.Expr)
-	return value != "null"
+	v, diag := attr.Expr.Value(&hcl.EvalContext{})
+	if diag.HasErrors() {
+		return false, diag
+	}
+	return v.Equals(cty.NullVal(cty.DynamicPseudoType)).True() ||
+		(v.CanIterateElements() && v.LengthInt() == 0), nil
 }
