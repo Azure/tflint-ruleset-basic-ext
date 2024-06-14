@@ -64,9 +64,9 @@ func (r *TerraformSensitiveVariableNoDefaultRule) CheckFile(runner tflint.Runner
 		if !sensitive {
 			continue
 		}
-		nullOrEmpty, err := nullOrZeroDefaultValue(block)
-		if err != nil {
-			return nil
+		nullOrEmpty, evalDefaultErr := nullOrZeroDefaultValue(block)
+		if evalDefaultErr != nil {
+			return evalDefaultErr
 		}
 		if !nullOrEmpty {
 			subErr := runner.EmitIssue(
