@@ -75,6 +75,39 @@ variable "availability_zone_tag" {
 				},
 			},
 		},
+		{
+			Name: "4. empty list should be ok",
+			Content: `
+variable "availability_zone_names" {
+  type      = list(string)
+  default   = []
+  sensitive = true
+}
+`,
+			Expected: helper.Issues{},
+		},
+		{
+			Name: "5. empty set should be ok",
+			Content: `
+variable "availability_zone_names" {
+  type      = set(string)
+  default   = []
+  sensitive = true
+}
+`,
+			Expected: helper.Issues{},
+		},
+		{
+			Name: "6. empty map should be ok",
+			Content: `
+variable "availability_zone_names" {
+  type      = map(string)
+  default   = {}
+  sensitive = true
+}
+`,
+			Expected: helper.Issues{},
+		},
 	}
 	rule := NewTerraformSensitiveVariableNoDefaultRule()
 
