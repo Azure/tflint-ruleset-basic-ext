@@ -14,24 +14,28 @@ jobs:
   test:
     name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-13, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
     - name: Checkout
-      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4.1.7
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 #v4.1.1
     - name: Set up Go
-      uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 #v5.0.1
+      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 #v5.0.0
       with:
         go-version: 1.22
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@2e230e8fe0ad3a14a340ad0815ddb96d599d2aff #v3.25.8
+      uses: github/codeql-action/init@e5f05b81d5b6ff8cfa111c80c22c5fd02a384118 #v3.23.0
       with:
         languages: go
     - name: Run build
       run: make build
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@2e230e8fe0ad3a14a340ad0815ddb96d599d2aff #v3.25.8
+      uses: github/codeql-action/analyze@e5f05b81d5b6ff8cfa111c80c22c5fd02a384118 #v3.23.0
     - name: Run tests
       run: make test
     - name: Doc test
