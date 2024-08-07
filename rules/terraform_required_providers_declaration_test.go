@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"github.com/stretchr/testify/require"
 	"github.com/terraform-linters/tflint-plugin-sdk/helper"
 	"testing"
 )
@@ -228,6 +229,21 @@ terraform {
 			}
 
 			AssertIssues(t, tc.Expected, runner.Issues)
+		})
+	}
+}
+
+func Test_TerraformRequiredProvidersDeclaration_SkipOverrideFile(t *testing.T) {
+	filenames := []string{"override.tf", "terraform_override.tf"}
+	for _, filename := range filenames {
+		t.Run(filename, func(t *testing.T) {
+			rule := NewTerraformRequiredProvidersDeclarationRule()
+			runner := helper.TestRunner(t, map[string]string{filename: `
+terraform {
+  required_version = "~> 1.1.9"
+}`})
+			require.NoError(t, rule.Check(runner))
+			AssertIssues(t, helper.Issues{}, runner.Issues)
 		})
 	}
 }

@@ -49,6 +49,11 @@ func (r *TerraformRequiredProvidersDeclarationRule) CheckFile(runner tflint.Runn
 		logger.Debug("skip terraform_required_providers_declaration check since it's not hcl file")
 		return nil
 	}
+	filename := body.Range().Filename
+	if isOverrideTfFile(filename) {
+		logger.Debug("skip terraform_required_version_declaration check since it's override file")
+		return nil
+	}
 	blocks := body.Blocks
 	for _, block := range blocks {
 		switch block.Type {
