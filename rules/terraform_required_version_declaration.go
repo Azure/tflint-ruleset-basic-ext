@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/terraform-linters/tflint-plugin-sdk/logger"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
+	"strings"
 )
 
 var _ tflint.Rule = &TerraformRequiredVersionDeclarationRule{}
@@ -44,6 +45,11 @@ func (r *TerraformRequiredVersionDeclarationRule) CheckFile(runner tflint.Runner
 		logger.Debug("skip terraform_required_version_declaration check since it's not hcl file")
 		return nil
 	}
+	filename := body.Range().Filename
+	if isOverrideTfFile(filename) {
+		logger.Debug("skip terraform_required_version_declaration check since it's override file")
+		return nil
+	}
 	blocks := body.Blocks
 	for _, block := range blocks {
 		if block.Type != "terraform" {
@@ -54,6 +60,10 @@ func (r *TerraformRequiredVersionDeclarationRule) CheckFile(runner tflint.Runner
 		}
 	}
 	return err
+}
+
+func isOverrideTfFile(filename string) bool {
+	return strings.HasSuffix(filename, "_override.tf") || filename == "override.tf"
 }
 
 func (r *TerraformRequiredVersionDeclarationRule) checkBlock(runner tflint.Runner, block *hclsyntax.Block) error {
