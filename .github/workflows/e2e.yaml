@@ -18,12 +18,10 @@ jobs:
         name: Checkout source code
       - uses: terraform-linters/setup-tflint@90f302c255ef959cbfb4bd10581afecdb7ece3e6 #v4.1.1
         name: Setup TFLint
-        with:
-          tflint_version: v0.50.3
       - name: Set up Go
         uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b #v5.4.0
         with:
-          go-version: 1.22
+          go-version-file: go.mod
       - name: Run install
         run: make install
       - name: Run e2e tests
