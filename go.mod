@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.23.0
 	github.com/stretchr/testify v1.10.0
 	github.com/terraform-linters/tflint-plugin-sdk v0.22.0
-	github.com/zclconf/go-cty v1.16.2
+	github.com/zclconf/go-cty v1.16.3
 	gopkg.in/yaml.v3 v3.0.1
 )
 
