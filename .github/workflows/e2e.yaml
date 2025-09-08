@@ -19,7 +19,7 @@ jobs:
       - uses: terraform-linters/setup-tflint@90f302c255ef959cbfb4bd10581afecdb7ece3e6 #v4.1.1
         name: Setup TFLint
       - name: Set up Go
-        uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b #v5.4.0
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 #v6.0.0
         with:
           go-version-file: go.mod
       - name: Run install
